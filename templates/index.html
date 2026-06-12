@@ -6,143 +6,175 @@
 <title>Pi Security Monitor</title>
 <style>
 :root{
-  --bg:#0a0f0a;--bg2:#111811;--bg3:#1a221a;--border:#2a3a2a;
-  --text:#d4e8d4;--dim:#6a8a6a;
-  --green:#4caf50;--red:#ef5350;--yellow:#ffb300;--blue:#29b6f6;--purple:#ab47bc;
-  --accent:#4caf50;--accent-dim:#1a3a1a;
+  --bg:#0f172a;--bg2:#1e293b;--bg3:#263548;--border:#334155;
+  --text:#f1f5f9;--dim:#94a3b8;--dimmer:#64748b;
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
+  --indigo:#818cf8;--purple:#a78bfa;
+  --green-bg:#052e16;--red-bg:#2d0e0e;--yellow-bg:#2d1c00;--blue-bg:#0c1f3d;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;font-size:13px;min-height:100vh}
-a{color:var(--blue);text-decoration:none}
+body{background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:14px;line-height:1.5;min-height:100vh}
+a{color:var(--indigo);text-decoration:none}
 
 /* ── HEADER ── */
-.header{
-  background:linear-gradient(90deg,#0a1a0a,#111811);
-  padding:10px 18px;border-bottom:2px solid var(--accent);
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:10}
-.header-brand{display:flex;align-items:center;gap:10px}
-.header-brand .logo{color:var(--accent);font-size:18px;font-weight:700;letter-spacing:2px}
-.header-brand .subtitle{color:var(--dim);font-size:10px;letter-spacing:1px;text-transform:uppercase}
-.header-right{display:flex;gap:16px;align-items:center;color:var(--dim);font-size:12px}
-.header-right .pill{background:var(--bg3);border:1px solid var(--border);
-  border-radius:12px;padding:2px 10px;font-size:11px}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:0 20px;height:56px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:20;
+  box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:.2px}
+.brand-sub{font-size:11px;color:var(--dimmer);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+.stat-pill{background:var(--bg3);border:1px solid var(--border);border-radius:20px;
+  padding:4px 12px;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--dim);
+  padding:5px 14px;border-radius:6px;cursor:pointer;font-size:13px;
+  font-family:inherit;transition:all .15s}
+.btn-logout:hover{background:var(--bg3);color:var(--text);border-color:var(--dimmer)}
 
 /* ── TABS ── */
 .tabs{background:var(--bg2);border-bottom:1px solid var(--border);
-  display:flex;overflow-x:auto;position:sticky;top:43px;z-index:9}
-.tab{padding:9px 16px;cursor:pointer;color:var(--dim);white-space:nowrap;
-  border-bottom:3px solid transparent;font-size:11px;letter-spacing:.5px;
-  text-transform:uppercase;transition:color .15s}
-.tab:hover{color:var(--text);background:var(--bg3)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-dim)}
-.content{padding:14px}
+  display:flex;overflow-x:auto;position:sticky;top:56px;z-index:19;
+  scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:14px 18px;cursor:pointer;color:var(--dim);white-space:nowrap;
+  border-bottom:2px solid transparent;font-size:13px;font-weight:500;
+  transition:color .15s;user-select:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--indigo);border-bottom-color:var(--indigo)}
+.content{padding:20px;max-width:1600px}
 .panel{display:none}
 .panel.active{display:block}
 
-/* ── CARDS ── */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:14px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;
-  border-left:3px solid var(--accent)}
-.card-label{color:var(--dim);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.card-value{font-size:22px;font-weight:700;line-height:1}
-.card-sub{color:var(--dim);font-size:11px;margin-top:4px}
-.bar{background:var(--bg3);height:3px;border-radius:2px;margin-top:8px}
-.bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .4s}
+/* ── GRID CARDS ── */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;box-shadow:var(--shadow)}
+.card-label{color:var(--dimmer);font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:8px}
+.card-value{font-size:26px;font-weight:700;line-height:1;letter-spacing:-.5px}
+.card-sub{color:var(--dim);font-size:12px;margin-top:6px}
+.bar{background:var(--bg3);height:4px;border-radius:2px;margin-top:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .5s}
 .bar-fill.warn{background:var(--yellow)}
 .bar-fill.danger{background:var(--red)}
 
+/* ── SECTION TITLES ── */
+.section-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--dimmer);margin:20px 0 10px;padding-bottom:8px;
+  border-bottom:1px solid var(--border)}
+
 /* ── TABLES ── */
-.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:6px;
-  overflow:hidden;margin-bottom:14px}
-.table-scroll{overflow:auto;max-height:520px}
-table{width:100%;border-collapse:collapse;min-width:400px}
-thead th{text-align:left;padding:7px 10px;color:var(--accent);font-size:9px;
-  text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);
-  background:var(--bg3);position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.table-scroll{overflow:auto;max-height:480px}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:10px 14px;color:var(--dimmer);font-size:11px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.6px;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+  position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
 thead th:hover{color:var(--text)}
-td{padding:5px 10px;border-bottom:1px solid var(--bg3);vertical-align:middle;
-  max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td{padding:8px 14px;border-bottom:1px solid var(--bg3);font-size:13px;
+  vertical-align:middle;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg3)}
+tr:hover td{background:rgba(255,255,255,.03)}
 
 /* ── LOG VIEWER ── */
-.log-box{background:#040804;border:1px solid var(--border);border-radius:6px;
-  padding:10px;overflow-y:auto;font-family:monospace;font-size:11.5px;line-height:1.6}
+.log-box{background:#080e1a;border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;overflow-y:auto;font-family:'Menlo','Cascadia Code','Consolas',monospace;
+  font-size:12px;line-height:1.7;box-shadow:var(--shadow)}
 .log-line{white-space:pre-wrap;word-break:break-all;padding:1px 0}
 .log-err{color:var(--red)}
 .log-warn{color:var(--yellow)}
 .log-ok{color:var(--green)}
-.log-info{color:var(--blue)}
+.log-info{color:#38bdf8}
 
 /* ── BADGES ── */
-.badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;
-  font-weight:700;white-space:nowrap;letter-spacing:.3px}
-.b-green{background:#0d2e0d;color:var(--green);border:1px solid #1a4a1a}
-.b-red{background:#2e0d0d;color:var(--red);border:1px solid #4a1a1a}
-.b-yellow{background:#2e1e00;color:var(--yellow);border:1px solid #4a3000}
-.b-blue{background:#0d1e2e;color:var(--blue);border:1px solid #1a304a}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;
+  font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:.2px}
+.b-green{background:var(--green-bg);color:var(--green);border:1px solid #166534}
+.b-red{background:var(--red-bg);color:var(--red);border:1px solid #7f1d1d}
+.b-yellow{background:var(--yellow-bg);color:var(--yellow);border:1px solid #78350f}
+.b-blue{background:var(--blue-bg);color:var(--blue);border:1px solid #1e3a5f}
 .b-gray{background:var(--bg3);color:var(--dim);border:1px solid var(--border)}
-.b-purple{background:#1e0d2e;color:var(--purple);border:1px solid #301a4a}
+.b-purple{background:#1e1030;color:var(--purple);border:1px solid #4c1d95}
+.b-indigo{background:#1e1b4b;color:var(--indigo);border:1px solid #3730a3}
 
 /* ── CONTROLS ── */
-.controls{display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap}
-input[type=text],select{background:var(--bg2);border:1px solid var(--border);
-  color:var(--text);padding:5px 10px;border-radius:4px;font-family:monospace;font-size:12px}
-input[type=text]:focus,select:focus{outline:none;border-color:var(--accent)}
-input[type=text]{min-width:180px}
-button{background:var(--bg3);border:1px solid var(--border);color:var(--text);
-  padding:5px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;
-  transition:background .15s}
-button:hover{background:var(--border)}
-button.btn-primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-button.btn-danger{background:#2e0d0d;border-color:var(--red);color:var(--red)}
-.count-label{color:var(--dim);font-size:11px;margin-left:4px}
+.controls{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.input-search{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:7px 12px;border-radius:7px;font-size:13px;font-family:inherit;min-width:200px;
+  outline:none;transition:border-color .15s}
+.input-search:focus{border-color:var(--indigo)}
+.input-search::placeholder{color:var(--dimmer)}
+.sel{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:7px 12px;border-radius:7px;font-size:13px;font-family:inherit;outline:none;cursor:pointer}
+.sel:focus{border-color:var(--indigo)}
+.btn{background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-family:inherit;
+  font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--bg3);border-color:var(--dimmer)}
+.btn-primary{background:#1e1b4b;border-color:var(--indigo);color:var(--indigo)}
+.btn-primary:hover{background:#2e2b5b;border-color:#a5b4fc}
+.btn-danger{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:#3d1010}
+.count-badge{background:var(--bg3);color:var(--dim);border:1px solid var(--border);
+  border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600}
 
 /* ── SUBTABS ── */
-.subtabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
-.stab{padding:4px 12px;border:1px solid var(--border);border-radius:4px;
-  cursor:pointer;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
-.stab:hover{color:var(--text)}
-.stab.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.subtabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.stab{padding:6px 14px;border:1px solid var(--border);border-radius:6px;
+  cursor:pointer;color:var(--dim);font-size:12px;font-weight:500;
+  font-family:inherit;background:transparent;transition:all .15s}
+.stab:hover{color:var(--text);border-color:var(--dimmer)}
+.stab.active{border-color:var(--indigo);color:var(--indigo);background:#1e1b4b}
 
 /* ── ALERTS ── */
-.alert{border-radius:5px;padding:9px 13px;margin-bottom:10px;font-size:12px}
-.alert-danger{background:#2e0d0d;border:1px solid var(--red);color:var(--red)}
-.alert-warn{background:#2e1e00;border:1px solid var(--yellow);color:var(--yellow)}
-.alert-info{background:#0d1e2e;border:1px solid var(--blue);color:var(--blue)}
+.alert{border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;
+  display:flex;align-items:flex-start;gap:8px}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-danger{background:var(--red-bg);border:1px solid #7f1d1d;color:#fca5a5}
+.alert-warn{background:var(--yellow-bg);border:1px solid #78350f;color:#fcd34d}
+.alert-info{background:var(--blue-bg);border:1px solid #1e3a5f;color:#93c5fd}
 
-/* ── MISC ── */
-.section-title{color:var(--accent);font-size:9px;text-transform:uppercase;
-  letter-spacing:1.5px;margin:14px 0 8px;padding-bottom:4px;
-  border-bottom:1px solid var(--border)}
+/* ── HELPERS ── */
 .ok{color:var(--green)}.warn{color:var(--yellow)}.danger{color:var(--red)}
-.loading{color:var(--dim);padding:20px;text-align:center;font-size:12px}
-.mono{font-family:monospace;font-size:11px}
+.loading{color:var(--dimmer);padding:28px;text-align:center;font-size:13px}
+.mono{font-family:'Menlo','Cascadia Code','Consolas',monospace;font-size:12px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.two-col{grid-template-columns:1fr}}
-tr.row-changed td{background:#2e0d0d !important}
-tr.row-warn td{background:#2e1e00 !important}
+tr.row-changed td{background:#2d0e0e !important}
+tr.row-warn td{background:#2d1c00 !important}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <div class="header-brand">
-    <div class="logo">&#9632; PSM</div>
-    <div class="subtitle">Pi Security Monitor</div>
+  <div class="brand">
+    <div class="brand-icon">&#9632;</div>
+    <div>
+      <div class="brand-name">Pi Security Monitor</div>
+      <div class="brand-sub" id="brand-hostname">raspberrypi</div>
+    </div>
   </div>
   <div class="header-right">
-    <span class="pill" id="hdr-load">load: --</span>
-    <span class="pill" id="hdr-ts">--:--:--</span>
-    <a href="/logout" style="color:var(--dim);font-size:11px;border:1px solid var(--border);
-      padding:2px 10px;border-radius:12px">logout</a>
+    <span class="stat-pill" id="hdr-load">load —</span>
+    <span class="stat-pill" id="hdr-ts">--:--:--</span>
+    <button class="btn-logout" onclick="location.href='/logout'">Sign out</button>
   </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
   <div class="tab active"  onclick="showTab('dashboard')">Dashboard</div>
   <div class="tab" onclick="showTab('logs')">Logs</div>
@@ -157,45 +189,45 @@ tr.row-warn td{background:#2e1e00 !important}
 
 <div class="content">
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      DASHBOARD
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-dashboard" class="panel active">
   <div class="cards">
     <div class="card">
       <div class="card-label">CPU Usage</div>
-      <div class="card-value" id="d-cpu">--</div>
+      <div class="card-value" id="d-cpu">—</div>
       <div class="bar"><div class="bar-fill" id="b-cpu" style="width:0%"></div></div>
     </div>
     <div class="card">
       <div class="card-label">Memory</div>
-      <div class="card-value" id="d-mem">--</div>
+      <div class="card-value" id="d-mem">—</div>
       <div class="card-sub" id="d-mem-sub"></div>
       <div class="bar"><div class="bar-fill" id="b-mem" style="width:0%"></div></div>
     </div>
     <div class="card">
-      <div class="card-label">Disk /</div>
-      <div class="card-value" id="d-disk">--</div>
+      <div class="card-label">Disk</div>
+      <div class="card-value" id="d-disk">—</div>
       <div class="card-sub" id="d-disk-sub"></div>
       <div class="bar"><div class="bar-fill" id="b-disk" style="width:0%"></div></div>
     </div>
     <div class="card">
       <div class="card-label">Temperature</div>
-      <div class="card-value" id="d-temp">--</div>
+      <div class="card-value" id="d-temp">—</div>
       <div class="card-sub">CPU Core</div>
     </div>
     <div class="card">
       <div class="card-label">Load Average</div>
-      <div class="card-value" id="d-load">--</div>
+      <div class="card-value" id="d-load">—</div>
       <div class="card-sub" id="d-load3">1m · 5m · 15m</div>
     </div>
     <div class="card">
       <div class="card-label">Uptime</div>
-      <div class="card-value" id="d-uptime" style="font-size:16px">--</div>
+      <div class="card-value" id="d-uptime" style="font-size:20px">—</div>
     </div>
     <div class="card">
       <div class="card-label">SSH Alerts</div>
-      <div class="card-value" id="d-ssh-count">--</div>
+      <div class="card-value" id="d-ssh-count">—</div>
       <div class="card-sub" id="d-ssh-sub">failed attempts</div>
     </div>
   </div>
@@ -203,71 +235,67 @@ tr.row-warn td{background:#2e1e00 !important}
   <div class="two-col">
     <div>
       <div class="section-title">Recent Auth Events</div>
-      <div class="log-box" id="d-auth" style="height:230px"><div class="loading">loading…</div></div>
+      <div class="log-box" id="d-auth" style="height:220px"><div class="loading">Loading…</div></div>
     </div>
     <div>
       <div class="section-title">Recent Syslog</div>
-      <div class="log-box" id="d-syslog" style="height:230px"><div class="loading">loading…</div></div>
+      <div class="log-box" id="d-syslog" style="height:220px"><div class="loading">Loading…</div></div>
     </div>
   </div>
 
   <div class="section-title">SSH Login Events</div>
   <div class="table-wrap"><div class="table-scroll" style="max-height:260px">
     <table>
-      <thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP</th><th>Method</th></tr></thead>
-      <tbody id="ssh-body"><tr><td colspan="5" class="loading">loading…</td></tr></tbody>
+      <thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP Address</th><th>Method</th></tr></thead>
+      <tbody id="ssh-body"><tr><td colspan="5" class="loading">Loading…</td></tr></tbody>
     </table>
   </div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      LOGS
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-logs" class="panel">
   <div class="subtabs" id="log-subtabs">
-    <div class="stab active" data-log="auth"    onclick="switchLog(this,'auth')">Auth</div>
-    <div class="stab"        data-log="syslog"  onclick="switchLog(this,'syslog')">Syslog</div>
-    <div class="stab"        data-log="kern"    onclick="switchLog(this,'kern')">Kern</div>
-    <div class="stab"        data-log="daemon"  onclick="switchLog(this,'daemon')">Daemon</div>
-    <div class="stab"        data-log="dpkg"    onclick="switchLog(this,'dpkg')">DPKG</div>
-    <div class="stab"        data-log="fail2ban" onclick="switchLog(this,'fail2ban')">Fail2ban</div>
-    <div class="stab"        data-log="ufw"     onclick="switchLog(this,'ufw')">UFW</div>
+    <button class="stab active" data-log="auth"     onclick="switchLog(this,'auth')">Auth</button>
+    <button class="stab"        data-log="syslog"   onclick="switchLog(this,'syslog')">Syslog</button>
+    <button class="stab"        data-log="kern"     onclick="switchLog(this,'kern')">Kernel</button>
+    <button class="stab"        data-log="daemon"   onclick="switchLog(this,'daemon')">Daemon</button>
+    <button class="stab"        data-log="dpkg"     onclick="switchLog(this,'dpkg')">DPKG</button>
+    <button class="stab"        data-log="fail2ban" onclick="switchLog(this,'fail2ban')">Fail2ban</button>
+    <button class="stab"        data-log="ufw"      onclick="switchLog(this,'ufw')">UFW</button>
   </div>
   <div class="controls">
-    <input type="text" id="log-filter" placeholder="Filter lines…" oninput="applyLogFilter()">
-    <select id="log-n" onchange="loadCurrentLog()">
+    <input class="input-search" id="log-filter" placeholder="Filter lines…" oninput="applyLogFilter()">
+    <select class="sel" id="log-n" onchange="loadCurrentLog()">
       <option value="100">100 lines</option>
       <option value="200">200 lines</option>
       <option value="500">500 lines</option>
     </select>
-    <button onclick="loadCurrentLog()">&#8635; Refresh</button>
-    <span class="count-label" id="log-file-label"></span>
-    <span class="count-label" id="log-count-label"></span>
+    <button class="btn" onclick="loadCurrentLog()">&#8635; Refresh</button>
+    <span class="count-badge" id="log-count-label"></span>
+    <span style="color:var(--dimmer);font-size:12px" id="log-file-label"></span>
   </div>
-  <div class="log-box" id="log-viewer" style="height:calc(100vh - 250px)">
-    <div class="loading">Select a log above</div>
+  <div class="log-box" id="log-viewer" style="height:calc(100vh - 270px)">
+    <div class="loading">Select a log source above</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      NETWORK
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-network" class="panel">
-  <div class="section-title">Interface Statistics</div>
-  <div class="table-wrap" style="margin-bottom:14px">
+  <div class="section-title">Interfaces</div>
+  <div class="table-wrap" style="margin-bottom:20px">
     <table>
-      <thead><tr>
-        <th>Interface</th><th>Received</th><th>Sent</th>
-        <th>Err In</th><th>Err Out</th><th>Drop In</th><th>Drop Out</th>
-      </tr></thead>
+      <thead><tr><th>Interface</th><th>Received</th><th>Sent</th><th>Err In</th><th>Err Out</th><th>Drop In</th><th>Drop Out</th></tr></thead>
       <tbody id="iface-body"></tbody>
     </table>
   </div>
-
   <div class="section-title">Active Connections</div>
   <div class="controls">
-    <input type="text" id="net-filter" placeholder="Filter by IP / port / PID…" oninput="renderConns()">
-    <select id="net-status" onchange="renderConns()">
+    <input class="input-search" id="net-filter" placeholder="Filter by IP, port, or PID…" oninput="renderConns()">
+    <select class="sel" id="net-status" onchange="renderConns()">
       <option value="">All statuses</option>
       <option value="ESTABLISHED">ESTABLISHED</option>
       <option value="LISTEN">LISTEN</option>
@@ -275,12 +303,12 @@ tr.row-warn td{background:#2e1e00 !important}
       <option value="CLOSE_WAIT">CLOSE_WAIT</option>
       <option value="SYN_SENT">SYN_SENT</option>
     </select>
-    <select id="net-proto" onchange="renderConns()">
+    <select class="sel" id="net-proto" onchange="renderConns()">
       <option value="">All protocols</option>
       <option value="TCP">TCP</option>
       <option value="UDP">UDP</option>
     </select>
-    <span class="count-label" id="net-count"></span>
+    <span class="count-badge" id="net-count"></span>
   </div>
   <div class="table-wrap"><div class="table-scroll">
     <table>
@@ -290,21 +318,21 @@ tr.row-warn td{background:#2e1e00 !important}
   </div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      PROCESSES
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-processes" class="panel">
   <div class="controls">
-    <input type="text" id="proc-filter" placeholder="Filter by name / user / PID / cmd…" oninput="renderProcs()">
-    <select id="proc-sort" onchange="sortAndRenderProcs()">
-      <option value="cpu">Sort: CPU%</option>
-      <option value="mem">Sort: MEM%</option>
+    <input class="input-search" id="proc-filter" placeholder="Filter by name, user, PID, or command…" oninput="renderProcs()">
+    <select class="sel" id="proc-sort" onchange="sortAndRenderProcs()">
+      <option value="cpu">Sort: CPU %</option>
+      <option value="mem">Sort: Memory %</option>
       <option value="pid">Sort: PID</option>
       <option value="name">Sort: Name</option>
       <option value="user">Sort: User</option>
     </select>
-    <button onclick="loadProcs()">&#8635; Refresh</button>
-    <span class="count-label" id="proc-count"></span>
+    <button class="btn" onclick="loadProcs()">&#8635; Refresh</button>
+    <span class="count-badge" id="proc-count"></span>
   </div>
   <div class="table-wrap"><div class="table-scroll">
     <table>
@@ -312,8 +340,8 @@ tr.row-warn td{background:#2e1e00 !important}
         <th onclick="setSortProc('pid')">PID</th>
         <th onclick="setSortProc('name')">Name</th>
         <th onclick="setSortProc('user')">User</th>
-        <th onclick="setSortProc('cpu')">CPU%</th>
-        <th onclick="setSortProc('mem')">MEM%</th>
+        <th onclick="setSortProc('cpu')">CPU %</th>
+        <th onclick="setSortProc('mem')">MEM %</th>
         <th>Status</th>
         <th>Command</th>
       </tr></thead>
@@ -322,58 +350,54 @@ tr.row-warn td{background:#2e1e00 !important}
   </div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      SERVICES
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-services" class="panel">
   <div class="controls">
-    <input type="text" id="svc-filter" placeholder="Filter services…" oninput="renderSvcs()">
-    <select id="svc-state" onchange="renderSvcs()">
-      <option value="">All</option>
+    <input class="input-search" id="svc-filter" placeholder="Filter services…" oninput="renderSvcs()">
+    <select class="sel" id="svc-state" onchange="renderSvcs()">
+      <option value="">All states</option>
       <option value="active">Active</option>
       <option value="inactive">Inactive</option>
       <option value="failed">Failed</option>
     </select>
-    <button onclick="loadSvcs()">&#8635; Refresh</button>
-    <span class="count-label" id="svc-count"></span>
+    <button class="btn" onclick="loadSvcs()">&#8635; Refresh</button>
+    <span class="count-badge" id="svc-count"></span>
   </div>
   <div class="table-wrap"><div class="table-scroll">
     <table>
-      <thead><tr>
-        <th>Service</th><th>Load</th><th>Active</th><th>Sub</th><th>Description</th>
-      </tr></thead>
+      <thead><tr><th>Service</th><th>Load</th><th>Active</th><th>Sub-state</th><th>Description</th></tr></thead>
       <tbody id="svc-body"></tbody>
     </table>
   </div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      INTEGRITY
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-integrity" class="panel">
   <div class="controls">
-    <button class="btn-primary" onclick="doBaseline()">&#128274; Set Baseline</button>
-    <button onclick="loadIntegrity()">&#8635; Refresh</button>
-    <span class="count-label" id="int-summary"></span>
+    <button class="btn btn-primary" onclick="doBaseline()">Set Baseline</button>
+    <button class="btn" onclick="loadIntegrity()">&#8635; Refresh</button>
+    <span class="count-badge" id="int-summary"></span>
   </div>
   <div id="int-alerts"></div>
   <div class="table-wrap">
     <table>
-      <thead><tr>
-        <th>File</th><th>Current Hash</th><th>Baseline Hash</th><th>Modified</th><th>Status</th>
-      </tr></thead>
+      <thead><tr><th>File</th><th>Current Hash</th><th>Baseline Hash</th><th>Modified</th><th>Status</th></tr></thead>
       <tbody id="int-body"></tbody>
     </table>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      PACKAGES
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-packages" class="panel">
   <div class="controls">
-    <input type="text" id="pkg-filter" placeholder="Filter packages…" oninput="renderPkgs()">
-    <span class="count-label" id="pkg-count"></span>
+    <input class="input-search" id="pkg-filter" placeholder="Filter packages…" oninput="renderPkgs()">
+    <span class="count-badge" id="pkg-count"></span>
   </div>
   <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
     <table>
@@ -387,20 +411,19 @@ tr.row-warn td{background:#2e1e00 !important}
   </div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      INVESTIGATE
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-investigate" class="panel">
   <div class="subtabs">
-    <div class="stab active" onclick="switchInv(this,'crons')">Cronjobs</div>
-    <div class="stab"        onclick="switchInv(this,'autostart')">Autostart</div>
+    <button class="stab active" onclick="switchInv(this,'crons')">Cron Jobs</button>
+    <button class="stab"        onclick="switchInv(this,'autostart')">Autostart</button>
   </div>
-
   <div id="inv-crons">
     <div class="controls">
-      <input type="text" id="cron-filter" placeholder="Filter…" oninput="renderCrons()">
-      <button onclick="loadCrons()">&#8635; Refresh</button>
-      <span class="count-label" id="cron-count"></span>
+      <input class="input-search" id="cron-filter" placeholder="Filter…" oninput="renderCrons()">
+      <button class="btn" onclick="loadCrons()">&#8635; Refresh</button>
+      <span class="count-badge" id="cron-count"></span>
     </div>
     <div class="table-wrap"><div class="table-scroll">
       <table>
@@ -409,12 +432,11 @@ tr.row-warn td{background:#2e1e00 !important}
       </table>
     </div></div>
   </div>
-
   <div id="inv-autostart" style="display:none">
     <div class="controls">
-      <input type="text" id="auto-filter" placeholder="Filter…" oninput="renderAuto()">
-      <button onclick="loadAuto()">&#8635; Refresh</button>
-      <span class="count-label" id="auto-count"></span>
+      <input class="input-search" id="auto-filter" placeholder="Filter…" oninput="renderAuto()">
+      <button class="btn" onclick="loadAuto()">&#8635; Refresh</button>
+      <span class="count-badge" id="auto-count"></span>
     </div>
     <div class="table-wrap"><div class="table-scroll">
       <table>
@@ -425,54 +447,121 @@ tr.row-warn td{background:#2e1e00 !important}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════
      SNAPSHOTS
-══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="tab-snapshots" class="panel">
 
   <!-- List view -->
   <div id="snap-list-view">
     <div class="controls">
-      <button class="btn-primary" onclick="takeSnapshot()">&#128247; Take Snapshot</button>
-      <button onclick="loadSnapshots()">&#8635; Refresh</button>
-      <span class="count-label" id="snap-count"></span>
+      <button class="btn btn-primary" onclick="takeSnapshot(this)">Take Snapshot</button>
+      <button class="btn" onclick="loadSnapshots()">&#8635; Refresh</button>
+      <span class="count-badge" id="snap-count"></span>
     </div>
-    <div id="snap-list"><div class="loading">loading…</div></div>
+    <div id="snap-list"><div class="loading">Loading…</div></div>
   </div>
 
-  <!-- Detail view (hidden until a snapshot is opened) -->
+  <!-- Detail view -->
   <div id="snap-detail-view" style="display:none">
-    <div class="controls" style="margin-bottom:14px">
-      <button onclick="closeSnapDetail()">&#8592; Back to list</button>
-      <span id="snap-detail-title" style="color:var(--dim);font-size:12px;margin-left:8px"></span>
+    <div class="controls" style="margin-bottom:16px">
+      <button class="btn" onclick="closeSnapDetail()">&#8592; Back</button>
+      <span id="snap-detail-title" style="color:var(--dim);font-size:13px;margin-left:4px"></span>
     </div>
 
-    <div class="cards" id="snap-cards"></div>
-    <div id="snap-integrity-alerts"></div>
+    <!-- Subtabs within a snapshot -->
+    <div class="subtabs" id="snap-subtabs">
+      <button class="stab active" onclick="switchSnapTab(this,'overview')">Overview</button>
+      <button class="stab" onclick="switchSnapTab(this,'processes')">Processes</button>
+      <button class="stab" onclick="switchSnapTab(this,'network')">Network</button>
+      <button class="stab" onclick="switchSnapTab(this,'services')">Services</button>
+      <button class="stab" onclick="switchSnapTab(this,'logs')">Logs</button>
+      <button class="stab" onclick="switchSnapTab(this,'packages')">Packages</button>
+      <button class="stab" onclick="switchSnapTab(this,'integrity')">Integrity</button>
+      <button class="stab" onclick="switchSnapTab(this,'ssh')">SSH</button>
+    </div>
 
-    <div class="section-title">SSH Events</div>
-    <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
-      <table>
-        <thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP</th><th>Method</th></tr></thead>
-        <tbody id="snap-ssh-body"></tbody>
-      </table>
-    </div></div>
+    <div id="snapv-overview">
+      <div class="cards" id="snap-cards"></div>
+      <div id="snap-integrity-alerts"></div>
+      <div class="section-title">Cron Jobs</div>
+      <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
+        <table><thead><tr><th>Source</th><th>Entry</th></tr></thead>
+        <tbody id="snap-cron-body"></tbody></table>
+      </div></div>
+      <div class="section-title">Autostart Items</div>
+      <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
+        <table><thead><tr><th>Type</th><th>Name</th><th>State</th></tr></thead>
+        <tbody id="snap-auto-body"></tbody></table>
+      </div></div>
+    </div>
 
-    <div class="section-title">Top Processes</div>
-    <div class="table-wrap"><div class="table-scroll" style="max-height:220px">
-      <table>
-        <thead><tr><th>PID</th><th>Name</th><th>User</th><th>CPU%</th><th>MEM%</th><th>Status</th></tr></thead>
-        <tbody id="snap-proc-body"></tbody>
-      </table>
-    </div></div>
+    <div id="snapv-processes" style="display:none">
+      <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
+        <table><thead><tr><th>PID</th><th>Name</th><th>User</th><th>CPU %</th><th>MEM %</th><th>Status</th><th>Command</th></tr></thead>
+        <tbody id="snap-proc-body"></tbody></table>
+      </div></div>
+    </div>
 
-    <div class="section-title">Services — Failed</div>
-    <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
-      <table>
-        <thead><tr><th>Service</th><th>Active</th><th>Sub</th><th>Description</th></tr></thead>
-        <tbody id="snap-svc-body"></tbody>
-      </table>
-    </div></div>
+    <div id="snapv-network" style="display:none">
+      <div class="section-title">Interfaces</div>
+      <div class="table-wrap" style="margin-bottom:16px">
+        <table><thead><tr><th>Interface</th><th>Received</th><th>Sent</th><th>Err In</th><th>Err Out</th></tr></thead>
+        <tbody id="snap-iface-body"></tbody></table>
+      </div>
+      <div class="section-title">Connections</div>
+      <div class="table-wrap"><div class="table-scroll" style="max-height:400px">
+        <table><thead><tr><th>Proto</th><th>Local</th><th>Remote</th><th>Status</th><th>PID</th></tr></thead>
+        <tbody id="snap-conn-body"></tbody></table>
+      </div></div>
+    </div>
+
+    <div id="snapv-services" style="display:none">
+      <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
+        <table><thead><tr><th>Service</th><th>Load</th><th>Active</th><th>Sub</th><th>Description</th></tr></thead>
+        <tbody id="snap-svc-body"></tbody></table>
+      </div></div>
+    </div>
+
+    <div id="snapv-logs" style="display:none">
+      <div class="subtabs" id="snap-log-subtabs">
+        <button class="stab active" onclick="switchSnapLog(this,'auth')">Auth</button>
+        <button class="stab" onclick="switchSnapLog(this,'syslog')">Syslog</button>
+        <button class="stab" onclick="switchSnapLog(this,'kern')">Kernel</button>
+        <button class="stab" onclick="switchSnapLog(this,'daemon')">Daemon</button>
+        <button class="stab" onclick="switchSnapLog(this,'dpkg')">DPKG</button>
+        <button class="stab" onclick="switchSnapLog(this,'fail2ban')">Fail2ban</button>
+        <button class="stab" onclick="switchSnapLog(this,'ufw')">UFW</button>
+      </div>
+      <div class="log-box" id="snap-log-viewer" style="height:500px">
+        <div class="loading">Select a log above</div>
+      </div>
+    </div>
+
+    <div id="snapv-packages" style="display:none">
+      <div class="controls">
+        <input class="input-search" id="snap-pkg-filter" placeholder="Filter packages…" oninput="renderSnapPkgs()">
+        <span class="count-badge" id="snap-pkg-count"></span>
+      </div>
+      <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
+        <table><thead><tr><th>Package</th><th>Version</th><th>Size (KB)</th></tr></thead>
+        <tbody id="snap-pkg-body"></tbody></table>
+      </div></div>
+    </div>
+
+    <div id="snapv-integrity" style="display:none">
+      <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
+        <table><thead><tr><th>File</th><th>Hash</th><th>Baseline</th><th>Modified</th><th>Status</th></tr></thead>
+        <tbody id="snap-int-body"></tbody></table>
+      </div></div>
+    </div>
+
+    <div id="snapv-ssh" style="display:none">
+      <div class="table-wrap"><div class="table-scroll" style="max-height:600px">
+        <table><thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP Address</th><th>Method</th></tr></thead>
+        <tbody id="snap-ssh-body"></tbody></table>
+      </div></div>
+    </div>
   </div>
 </div>
 
@@ -480,28 +569,17 @@ tr.row-warn td{background:#2e1e00 !important}
 
 <script>
 // ── STATE ────────────────────────────────────────────────────────────────────
-let _tab = 'dashboard';
-let _log = 'auth';
-let _inv = 'crons';
-let _timer = null;
-let _sysTimer = null;
+let _tab='dashboard',_log='auth',_inv='crons',_timer=null,_sysTimer=null;
+let _procsData=[],_svcsData=[],_netData=null,_pkgData=[],_cronData=[],_autoData=[],_snapData=[];
+let _procSort='cpu',_pkgSort='size';
+let _snapDetail=null,_snapLogKey='auth';
 
-let _procsData = [];
-let _svcsData  = [];
-let _netData   = null;
-let _pkgData   = [];
-let _cronData  = [];
-let _autoData  = [];
-let _snapData  = [];
-let _procSort  = 'cpu';
-let _pkgSort   = 'size';
-
-// ── UTILITIES ────────────────────────────────────────────────────────────────
-const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── UTILS ────────────────────────────────────────────────────────────────────
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 function fmtBytes(b){
   if(!b||b===0)return'0 B';
-  const u=['B','KB','MB','GB','TB'];
+  const u=['B','KB','MB','GB'];
   const i=Math.floor(Math.log(b)/Math.log(1024));
   return(b/Math.pow(1024,i)).toFixed(1)+' '+u[i];
 }
@@ -513,86 +591,59 @@ function fmtUptime(s){
 }
 function pBar(id,pct){
   const el=document.getElementById(id);if(!el)return;
-  el.style.width=pct+'%';
+  el.style.width=Math.min(pct,100)+'%';
   el.className='bar-fill'+(pct>90?' danger':pct>75?' warn':'');
 }
 function pClass(v,w=70,d=90){return v>=d?'danger':v>=w?'warn':'ok'}
-
-function logClass(line){
-  const l=line.toLowerCase();
-  if(/error|fail|invalid|denied|refused|blocked/.test(l))return'log-err';
-  if(/warn|warning/.test(l))return'log-warn';
-  if(/accept|success|open|start|connect/.test(l))return'log-ok';
-  if(/info|notice/.test(l))return'log-info';
+function logClass(l){
+  const s=l.toLowerCase();
+  if(/error|fail|invalid|denied|refused|blocked/.test(s))return'log-err';
+  if(/warn|warning/.test(s))return'log-warn';
+  if(/accept|success|open|start|connect/.test(s))return'log-ok';
+  if(/info|notice/.test(s))return'log-info';
   return'';
 }
-
-function scrollBottom(id){const el=document.getElementById(id);if(el)el.scrollTop=el.scrollHeight}
-
-function renderLog(lines,targetId,filterVal=''){
-  const f=filterVal.toLowerCase();
-  const filtered=f?lines.filter(l=>l.toLowerCase().includes(f)):lines;
-  document.getElementById(targetId).innerHTML=
-    filtered.map(l=>`<div class="log-line ${logClass(l)}">${esc(l)}</div>`).join('');
-  scrollBottom(targetId);
-  return filtered.length;
+function renderLog(lines,id,filter=''){
+  const f=filter.toLowerCase();
+  const rows=f?lines.filter(l=>l.toLowerCase().includes(f)):lines;
+  const el=document.getElementById(id);
+  el.innerHTML=rows.map(l=>`<div class="log-line ${logClass(l)}">${esc(l)}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
+  return rows.length;
 }
-
 function statusBadge(s){
-  if(s==='ESTABLISHED')return'b-green';
-  if(s==='LISTEN')return'b-blue';
-  if(s==='TIME_WAIT'||s==='CLOSE_WAIT')return'b-yellow';
-  if(s==='FAILED')return'b-red';
+  if(s==='ESTABLISHED')return'b-green';if(s==='LISTEN')return'b-blue';
+  if(s==='TIME_WAIT'||s==='CLOSE_WAIT')return'b-yellow';if(s==='FAILED')return'b-red';
   return'b-gray';
 }
-function activeBadge(s){
-  if(s==='active')return'b-green';
-  if(s==='failed')return'b-red';
-  return'b-gray';
-}
-function intBadge(s){
-  if(s==='ok')return'b-green';
-  if(s==='CHANGED')return'b-red';
-  if(s==='no-baseline')return'b-yellow';
-  return'b-gray';
-}
+function activeBadge(s){return s==='active'?'b-green':s==='failed'?'b-red':'b-gray'}
+function intBadge(s){return s==='ok'?'b-green':s==='CHANGED'?'b-red':s==='no-baseline'?'b-yellow':'b-gray'}
 
 // ── SYSINFO ──────────────────────────────────────────────────────────────────
 async function loadSysinfo(){
   try{
     const d=await fetch('/api/sysinfo').then(r=>r.json());
     document.getElementById('hdr-ts').textContent=d.ts;
-    document.getElementById('hdr-load').textContent=`load: ${d.load[0].toFixed(2)}`;
+    document.getElementById('hdr-load').textContent=`load ${d.load[0].toFixed(2)}`;
 
     const cpuEl=document.getElementById('d-cpu');
     if(cpuEl){cpuEl.textContent=d.cpu+'%';cpuEl.className='card-value '+pClass(d.cpu);pBar('b-cpu',d.cpu)}
-
     const memEl=document.getElementById('d-mem');
     if(memEl){
       memEl.textContent=d.mem_pct+'%';memEl.className='card-value '+pClass(d.mem_pct);
       document.getElementById('d-mem-sub').textContent=fmtBytes(d.mem_used)+' / '+fmtBytes(d.mem_total);
       pBar('b-mem',d.mem_pct);
     }
-
     const diskEl=document.getElementById('d-disk');
     if(diskEl){
       diskEl.textContent=d.disk_pct+'%';diskEl.className='card-value '+pClass(d.disk_pct,80,92);
       document.getElementById('d-disk-sub').textContent=fmtBytes(d.disk_used)+' / '+fmtBytes(d.disk_total);
       pBar('b-disk',d.disk_pct);
     }
-
     const tempEl=document.getElementById('d-temp');
-    if(tempEl&&d.temp!==null){
-      tempEl.textContent=d.temp+'°C';
-      tempEl.className='card-value '+(d.temp>80?'danger':d.temp>65?'warn':'ok');
-    }
-
+    if(tempEl&&d.temp!=null){tempEl.textContent=d.temp+'°C';tempEl.className='card-value '+(d.temp>80?'danger':d.temp>65?'warn':'ok')}
     const loadEl=document.getElementById('d-load');
-    if(loadEl){
-      loadEl.textContent=d.load[0].toFixed(2);
-      document.getElementById('d-load3').textContent=d.load.map(x=>x.toFixed(2)).join(' · ');
-    }
-
+    if(loadEl){loadEl.textContent=d.load[0].toFixed(2);document.getElementById('d-load3').textContent=d.load.map(x=>x.toFixed(2)).join(' · ')}
     const upEl=document.getElementById('d-uptime');
     if(upEl)upEl.textContent=fmtUptime(d.uptime);
   }catch(e){}
@@ -604,138 +655,89 @@ function showTab(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   document.querySelector(`.tab[onclick="showTab('${name}')"]`).classList.add('active');
-  _tab=name;
-  clearInterval(_timer);_timer=null;
-
+  _tab=name;clearInterval(_timer);_timer=null;
   const tabActions={
-    dashboard:  [loadDashboard,   5000],
-    logs:       [loadCurrentLog,  10000],
-    network:    [loadNetwork,     5000],
-    processes:  [loadProcs,       5000],
-    services:   [loadSvcs,        10000],
-    integrity:  [loadIntegrity,   30000],
-    packages:   [loadPkgs,        null],
-    investigate:[() => _inv==='crons'?loadCrons():loadAuto(), 30000],
-    snapshots:  [loadSnapshots,   null],
+    dashboard:[loadDashboard,5000],logs:[loadCurrentLog,10000],
+    network:[loadNetwork,5000],processes:[loadProcs,5000],
+    services:[loadSvcs,10000],integrity:[loadIntegrity,30000],
+    packages:[loadPkgs,null],investigate:[()=>_inv==='crons'?loadCrons():loadAuto(),30000],
+    snapshots:[loadSnapshots,null],
   };
-  const [fn, interval] = tabActions[name] || [()=>{}, null];
-  fn();
-  if(interval) _timer=setInterval(fn, interval);
+  const[fn,interval]=tabActions[name]||[()=>{},null];
+  fn();if(interval)_timer=setInterval(fn,interval);
 }
 
 // ── DASHBOARD ────────────────────────────────────────────────────────────────
 async function loadDashboard(){
-  loadSysinfo();
-  loadSshEvents();
-  try{
-    const d=await fetch('/api/logs/auth?n=35').then(r=>r.json());
-    renderLog(d.lines,'d-auth');
-  }catch(e){}
-  try{
-    const d=await fetch('/api/logs/syslog?n=35').then(r=>r.json());
-    renderLog(d.lines,'d-syslog');
-  }catch(e){}
+  loadSysinfo();loadSshEvents();
+  try{const d=await fetch('/api/logs/auth?n=40').then(r=>r.json());renderLog(d.lines,'d-auth')}catch(e){}
+  try{const d=await fetch('/api/logs/syslog?n=40').then(r=>r.json());renderLog(d.lines,'d-syslog')}catch(e){}
 }
 
-// ── SSH EVENTS ────────────────────────────────────────────────────────────────
 async function loadSshEvents(){
   try{
     const d=await fetch('/api/ssh_events?n=100').then(r=>r.json());
     const failed=d.events.filter(e=>e.type!=='login');
     const logins=d.events.filter(e=>e.type==='login');
-
     const countEl=document.getElementById('d-ssh-count');
-    if(countEl){
-      countEl.textContent=failed.length;
-      countEl.className='card-value '+(failed.length>10?'danger':failed.length>0?'warn':'ok');
-    }
+    if(countEl){countEl.textContent=failed.length;countEl.className='card-value '+(failed.length>10?'danger':failed.length>0?'warn':'ok')}
     const subEl=document.getElementById('d-ssh-sub');
     if(subEl)subEl.textContent=`${logins.length} successful`;
-
     const tbody=document.getElementById('ssh-body');
-    if(tbody){
-      tbody.innerHTML=d.events.slice(0,30).map(e=>`<tr>
-        <td style="color:var(--dim);font-size:11px;white-space:nowrap">${esc(e.ts)}</td>
-        <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
-        <td class="mono">${esc(e.user)}</td>
-        <td class="mono">${esc(e.ip)}</td>
-        <td style="color:var(--dim)">${esc(e.method)}</td>
-      </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events found</td></tr>';
-    }
+    if(tbody)tbody.innerHTML=d.events.slice(0,30).map(e=>`<tr>
+      <td style="color:var(--dim)" class="mono">${esc(e.ts)}</td>
+      <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
+      <td>${esc(e.user)}</td><td class="mono">${esc(e.ip)}</td>
+      <td style="color:var(--dim)">${esc(e.method)}</td>
+    </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events found</td></tr>';
   }catch(e){}
 }
 
 // ── LOGS ─────────────────────────────────────────────────────────────────────
 let _logLines=[];
-
-function switchLog(el, type){
+function switchLog(el,type){
   document.querySelectorAll('#log-subtabs .stab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  _log=type;
-  loadCurrentLog();
+  el.classList.add('active');_log=type;loadCurrentLog();
 }
-
 async function loadCurrentLog(){
   const n=document.getElementById('log-n').value;
   const viewer=document.getElementById('log-viewer');
-  viewer.innerHTML='<div class="loading">loading…</div>';
+  viewer.innerHTML='<div class="loading">Loading…</div>';
   try{
     const d=await fetch(`/api/logs/${_log}?n=${n}`).then(r=>r.json());
     document.getElementById('log-file-label').textContent=d.file;
-    if(!d.available){
-      viewer.innerHTML=`<div class="log-line log-warn">Log not available: ${esc(d.file)}</div>`;
-      return;
-    }
+    if(!d.available){viewer.innerHTML=`<div class="log-line log-warn">File not available: ${esc(d.file)}</div>`;return}
     _logLines=d.lines;
     const shown=applyLogFilter();
-    document.getElementById('log-count-label').textContent=`${shown}/${d.lines.length} lines`;
-  }catch(e){
-    viewer.innerHTML=`<div class="log-line log-err">Error: ${esc(e)}</div>`;
-  }
+    document.getElementById('log-count-label').textContent=`${shown} / ${d.lines.length}`;
+  }catch(e){viewer.innerHTML=`<div class="log-line log-err">Error: ${esc(String(e))}</div>`}
 }
-
-function applyLogFilter(){
-  const f=document.getElementById('log-filter').value;
-  return renderLog(_logLines,'log-viewer',f);
-}
+function applyLogFilter(){return renderLog(_logLines,'log-viewer',document.getElementById('log-filter').value)}
 
 // ── NETWORK ──────────────────────────────────────────────────────────────────
 async function loadNetwork(){
   try{
     _netData=await fetch('/api/network').then(r=>r.json());
     let html='';
-    for(const[name,s]of Object.entries(_netData.interfaces)){
-      html+=`<tr>
-        <td><strong>${esc(name)}</strong></td>
-        <td>${fmtBytes(s.recv)}</td>
-        <td>${fmtBytes(s.sent)}</td>
-        <td class="${s.errin>0?'danger':''}">${s.errin}</td>
-        <td class="${s.errout>0?'danger':''}">${s.errout}</td>
-        <td class="${s.dropin>0?'warn':''}">${s.dropin}</td>
-        <td class="${s.dropout>0?'warn':''}">${s.dropout}</td>
-      </tr>`;
-    }
+    for(const[name,s]of Object.entries(_netData.interfaces))
+      html+=`<tr><td><strong>${esc(name)}</strong></td><td>${fmtBytes(s.recv)}</td><td>${fmtBytes(s.sent)}</td>
+        <td class="${s.errin>0?'danger':''}">${s.errin}</td><td class="${s.errout>0?'danger':''}">${s.errout}</td>
+        <td class="${s.dropin>0?'warn':''}">${s.dropin}</td><td class="${s.dropout>0?'warn':''}">${s.dropout}</td></tr>`;
     document.getElementById('iface-body').innerHTML=html||'<tr><td colspan="7" class="loading">No interfaces</td></tr>';
     renderConns();
   }catch(e){}
 }
-
 function renderConns(){
   if(!_netData)return;
   const f=document.getElementById('net-filter').value.toLowerCase();
-  const sf=document.getElementById('net-status').value;
-  const pf=document.getElementById('net-proto').value;
-
+  const sf=document.getElementById('net-status').value,pf=document.getElementById('net-proto').value;
   let c=_netData.connections;
-  if(sf)c=c.filter(x=>x.status===sf);
-  if(pf)c=c.filter(x=>x.proto===pf);
+  if(sf)c=c.filter(x=>x.status===sf);if(pf)c=c.filter(x=>x.proto===pf);
   if(f)c=c.filter(x=>(x.laddr+x.raddr+x.status+x.pid).toLowerCase().includes(f));
-
-  document.getElementById('net-count').textContent=`${c.length} / ${_netData.total} connections`;
+  document.getElementById('net-count').textContent=`${c.length} / ${_netData.total}`;
   document.getElementById('conn-body').innerHTML=c.map(x=>`<tr>
     <td><span class="badge ${x.proto==='TCP'?'b-blue':'b-purple'}">${x.proto}</span></td>
-    <td class="mono">${esc(x.laddr)}</td>
-    <td class="mono">${esc(x.raddr)}</td>
+    <td class="mono">${esc(x.laddr)}</td><td class="mono">${esc(x.raddr)}</td>
     <td><span class="badge ${statusBadge(x.status)}">${esc(x.status)}</span></td>
     <td>${x.pid||''}</td>
   </tr>`).join('')||'<tr><td colspan="5" class="loading">No connections</td></tr>';
@@ -743,62 +745,44 @@ function renderConns(){
 
 // ── PROCESSES ────────────────────────────────────────────────────────────────
 async function loadProcs(){
-  try{
-    const d=await fetch('/api/processes').then(r=>r.json());
-    _procsData=d.processes;
-    sortAndRenderProcs();
-  }catch(e){}
+  try{const d=await fetch('/api/processes').then(r=>r.json());_procsData=d.processes;sortAndRenderProcs()}catch(e){}
 }
-
-function setSortProc(key){_procSort=key;document.getElementById('proc-sort').value=key;sortAndRenderProcs()}
-
+function setSortProc(k){_procSort=k;document.getElementById('proc-sort').value=k;sortAndRenderProcs()}
 function sortAndRenderProcs(){
-  const key=document.getElementById('proc-sort').value;
-  _procSort=key;
-  if(key==='cpu')     _procsData.sort((a,b)=>b.cpu-a.cpu);
-  else if(key==='mem')_procsData.sort((a,b)=>b.mem-a.mem);
-  else if(key==='pid')_procsData.sort((a,b)=>a.pid-b.pid);
-  else if(key==='name')_procsData.sort((a,b)=>a.name.localeCompare(b.name));
-  else if(key==='user')_procsData.sort((a,b)=>a.user.localeCompare(b.user));
+  const k=document.getElementById('proc-sort').value;_procSort=k;
+  if(k==='cpu')_procsData.sort((a,b)=>b.cpu-a.cpu);
+  else if(k==='mem')_procsData.sort((a,b)=>b.mem-a.mem);
+  else if(k==='pid')_procsData.sort((a,b)=>a.pid-b.pid);
+  else if(k==='name')_procsData.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(k==='user')_procsData.sort((a,b)=>a.user.localeCompare(b.user));
   renderProcs();
 }
-
 function renderProcs(){
   const f=document.getElementById('proc-filter').value.toLowerCase();
-  const data=f?_procsData.filter(p=>
-    p.name.toLowerCase().includes(f)||p.user.toLowerCase().includes(f)||
-    p.cmd.toLowerCase().includes(f)||String(p.pid).includes(f)
-  ):_procsData;
-
+  const data=f?_procsData.filter(p=>p.name.toLowerCase().includes(f)||p.user.toLowerCase().includes(f)||p.cmd.toLowerCase().includes(f)||String(p.pid).includes(f)):_procsData;
   document.getElementById('proc-count').textContent=`${data.length} processes`;
   document.getElementById('proc-body').innerHTML=data.map(p=>`<tr>
-    <td class="mono">${p.pid}</td>
+    <td class="mono" style="color:var(--dim)">${p.pid}</td>
     <td><strong>${esc(p.name)}</strong></td>
     <td class="${p.user==='root'?'warn':''}">${esc(p.user)}</td>
     <td class="${pClass(p.cpu,30,70)}">${p.cpu.toFixed(1)}</td>
     <td class="${pClass(p.mem,15,30)}">${p.mem.toFixed(2)}</td>
     <td><span class="badge ${p.status==='running'?'b-green':'b-gray'}">${p.status}</span></td>
-    <td class="mono" title="${esc(p.cmd)}" style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${esc(p.cmd)}</td>
+    <td class="mono" title="${esc(p.cmd)}">${esc(p.cmd)}</td>
   </tr>`).join('')||'<tr><td colspan="7" class="loading">No processes</td></tr>';
 }
 
 // ── SERVICES ─────────────────────────────────────────────────────────────────
 async function loadSvcs(){
-  try{
-    const d=await fetch('/api/services').then(r=>r.json());
-    _svcsData=d.services;
-    renderSvcs();
-  }catch(e){}
+  try{const d=await fetch('/api/services').then(r=>r.json());_svcsData=d.services;renderSvcs()}catch(e){}
 }
-
 function renderSvcs(){
   const f=document.getElementById('svc-filter').value.toLowerCase();
   const sf=document.getElementById('svc-state').value;
   let data=_svcsData;
   if(sf)data=data.filter(s=>s.active===sf);
   if(f)data=data.filter(s=>s.name.toLowerCase().includes(f)||s.desc.toLowerCase().includes(f));
-
-  document.getElementById('svc-count').textContent=`${data.length} / ${_svcsData.length} services`;
+  document.getElementById('svc-count').textContent=`${data.length} / ${_svcsData.length}`;
   document.getElementById('svc-body').innerHTML=data.map(s=>`<tr>
     <td><strong>${esc(s.name)}</strong></td>
     <td><span class="badge ${s.load==='loaded'?'b-green':'b-gray'}">${s.load}</span></td>
@@ -812,53 +796,33 @@ function renderSvcs(){
 async function loadIntegrity(){
   try{
     const d=await fetch('/api/integrity').then(r=>r.json());
-    const changed=d.files.filter(f=>f.status==='CHANGED');
-    const noBase=d.files.filter(f=>f.status==='no-baseline');
-    const errs=d.files.filter(f=>f.status==='error');
-    const ok=d.files.filter(f=>f.status==='ok').length;
-
+    const changed=d.files.filter(f=>f.status==='CHANGED'),noBase=d.files.filter(f=>f.status==='no-baseline'),errs=d.files.filter(f=>f.status==='error'),ok=d.files.filter(f=>f.status==='ok').length;
     let alerts='';
-    if(changed.length)
-      alerts+=`<div class="alert alert-danger">&#9888; ${changed.length} file(s) CHANGED: ${changed.map(f=>f.path).join(', ')}</div>`;
-    if(noBase.length)
-      alerts+=`<div class="alert alert-warn">No baseline for ${noBase.length} file(s). Click "Set Baseline" to initialize.</div>`;
-    if(errs.length)
-      alerts+=`<div class="alert alert-warn">${errs.length} file(s) could not be read.</div>`;
+    if(changed.length)alerts+=`<div class="alert alert-danger"><span class="alert-icon">&#9888;</span><div>${changed.length} file(s) changed from baseline: <strong>${changed.map(f=>f.path).join(', ')}</strong></div></div>`;
+    if(noBase.length)alerts+=`<div class="alert alert-warn"><span class="alert-icon">&#8505;</span><div>No baseline for ${noBase.length} file(s). Click Set Baseline to initialize.</div></div>`;
     document.getElementById('int-alerts').innerHTML=alerts;
     document.getElementById('int-summary').textContent=`${ok} OK · ${changed.length} changed · ${errs.length} errors · ${noBase.length} no-baseline`;
-
     document.getElementById('int-body').innerHTML=d.files.map(f=>`<tr class="${f.status==='CHANGED'?'row-changed':f.status==='no-baseline'?'row-warn':''}">
-      <td class="mono" style="font-size:11px">${esc(f.path)}</td>
-      <td class="mono" style="font-size:10px;color:var(--dim)">${esc(f.hash)}</td>
-      <td class="mono" style="font-size:10px;color:var(--dim)">${esc(f.baseline)}</td>
-      <td style="font-size:11px;color:var(--dim)">${esc(f.mtime)}</td>
+      <td class="mono">${esc(f.path)}</td>
+      <td class="mono" style="color:var(--dim)">${esc(f.hash)}</td>
+      <td class="mono" style="color:var(--dim)">${esc(f.baseline)}</td>
+      <td style="color:var(--dim)">${esc(f.mtime)}</td>
       <td><span class="badge ${intBadge(f.status)}">${esc(f.status)}</span></td>
     </tr>`).join('');
   }catch(e){}
 }
-
 async function doBaseline(){
-  if(!confirm('Set current file hashes as new baseline?'))return;
-  try{
-    const d=await fetch('/api/integrity/baseline',{method:'POST'}).then(r=>r.json());
-    alert(`Baseline set for ${d.baselined} files.`);
-    loadIntegrity();
-  }catch(e){}
+  if(!confirm('Set current file hashes as the new baseline?'))return;
+  const d=await fetch('/api/integrity/baseline',{method:'POST'}).then(r=>r.json());
+  alert(`Baseline set for ${d.baselined} files.`);loadIntegrity();
 }
 
 // ── PACKAGES ─────────────────────────────────────────────────────────────────
 async function loadPkgs(){
   document.getElementById('pkg-body').innerHTML='<tr><td colspan="3" class="loading">Loading packages…</td></tr>';
-  try{
-    const d=await fetch('/api/packages').then(r=>r.json());
-    _pkgData=d.packages;
-    document.getElementById('pkg-count').textContent=`${_pkgData.length} packages`;
-    renderPkgs();
-  }catch(e){}
+  try{const d=await fetch('/api/packages').then(r=>r.json());_pkgData=d.packages;document.getElementById('pkg-count').textContent=`${_pkgData.length} packages`;renderPkgs()}catch(e){}
 }
-
-function setSortPkg(key){_pkgSort=key;renderPkgs()}
-
+function setSortPkg(k){_pkgSort=k;renderPkgs()}
 function renderPkgs(){
   const f=document.getElementById('pkg-filter').value.toLowerCase();
   let data=f?_pkgData.filter(p=>p.name.toLowerCase().includes(f)||p.version.toLowerCase().includes(f)):_pkgData;
@@ -866,8 +830,7 @@ function renderPkgs(){
   else if(_pkgSort==='version')data=[...data].sort((a,b)=>a.version.localeCompare(b.version));
   else data=[...data].sort((a,b)=>b.size-a.size);
   document.getElementById('pkg-body').innerHTML=data.map(p=>`<tr>
-    <td>${esc(p.name)}</td>
-    <td class="mono" style="color:var(--dim)">${esc(p.version)}</td>
+    <td>${esc(p.name)}</td><td class="mono" style="color:var(--dim)">${esc(p.version)}</td>
     <td class="mono" style="color:var(--dim)">${p.size}</td>
   </tr>`).join('');
 }
@@ -875,49 +838,33 @@ function renderPkgs(){
 // ── INVESTIGATE ──────────────────────────────────────────────────────────────
 function switchInv(el,type){
   document.querySelectorAll('#tab-investigate .stab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  _inv=type;
+  el.classList.add('active');_inv=type;
   document.getElementById('inv-crons').style.display=type==='crons'?'':'none';
   document.getElementById('inv-autostart').style.display=type==='autostart'?'':'none';
   if(type==='crons')loadCrons();else loadAuto();
 }
-
 async function loadCrons(){
-  try{
-    const d=await fetch('/api/cronjobs').then(r=>r.json());
-    _cronData=d.crons;
-    document.getElementById('cron-count').textContent=`${_cronData.length} entries`;
-    renderCrons();
-  }catch(e){}
+  try{const d=await fetch('/api/cronjobs').then(r=>r.json());_cronData=d.crons;document.getElementById('cron-count').textContent=`${_cronData.length} entries`;renderCrons()}catch(e){}
 }
-
 function renderCrons(){
   const f=document.getElementById('cron-filter').value.toLowerCase();
   const data=f?_cronData.filter(c=>c.source.toLowerCase().includes(f)||c.entry.toLowerCase().includes(f)):_cronData;
   document.getElementById('cron-body').innerHTML=data.map(c=>`<tr>
-    <td style="color:var(--dim);font-size:11px;white-space:nowrap;max-width:220px">${esc(c.source)}</td>
-    <td class="mono">${esc(c.entry)}</td>
+    <td style="color:var(--dim)" class="mono">${esc(c.source)}</td><td class="mono">${esc(c.entry)}</td>
   </tr>`).join('')||'<tr><td colspan="2" class="loading">No cron entries found</td></tr>';
 }
-
 async function loadAuto(){
-  try{
-    const d=await fetch('/api/autostart').then(r=>r.json());
-    _autoData=d.autostart;
-    document.getElementById('auto-count').textContent=`${_autoData.length} items`;
-    renderAuto();
-  }catch(e){}
+  try{const d=await fetch('/api/autostart').then(r=>r.json());_autoData=d.autostart;document.getElementById('auto-count').textContent=`${_autoData.length} items`;renderAuto()}catch(e){}
 }
-
 function renderAuto(){
   const f=document.getElementById('auto-filter').value.toLowerCase();
   const data=f?_autoData.filter(a=>a.name.toLowerCase().includes(f)||a.type.toLowerCase().includes(f)):_autoData;
   document.getElementById('auto-body').innerHTML=data.map(a=>`<tr>
-    <td><span class="badge ${a.type==='systemd'?'b-blue':a.type==='rc.local'?'b-yellow':'b-gray'}">${esc(a.type)}</span></td>
+    <td><span class="badge ${a.type==='systemd'?'b-indigo':a.type==='rc.local'?'b-yellow':'b-gray'}">${esc(a.type)}</span></td>
     <td>${esc(a.name)}</td>
     <td><span class="badge ${a.state==='enabled'||a.state==='exists'?'b-green':'b-gray'}">${esc(a.state)}</span></td>
-    <td class="mono" style="font-size:10px;color:var(--dim);max-width:300px">${esc((a.notes||'').substring(0,100))}</td>
-  </tr>`).join('')||'<tr><td colspan="4" class="loading">No autostart items found</td></tr>';
+    <td class="mono" style="color:var(--dim)">${esc((a.notes||'').substring(0,100))}</td>
+  </tr>`).join('')||'<tr><td colspan="4" class="loading">No autostart items</td></tr>';
 }
 
 // ── SNAPSHOTS ────────────────────────────────────────────────────────────────
@@ -928,110 +875,189 @@ async function loadSnapshots(){
     document.getElementById('snap-count').textContent=`${_snapData.length} snapshot${_snapData.length!==1?'s':''}`;
     const el=document.getElementById('snap-list');
     if(!_snapData.length){
-      el.innerHTML='<div class="loading">No snapshots yet. Click "Take Snapshot" to capture system state.</div>';
+      el.innerHTML='<div class="loading">No snapshots yet. Click "Take Snapshot" to capture a full system state.</div>';
       return;
     }
     el.innerHTML=`<div class="table-wrap"><div class="table-scroll">
-      <table>
-        <thead><tr><th>Timestamp</th><th>Size</th><th style="width:160px"></th></tr></thead>
-        <tbody>${_snapData.map(s=>`<tr>
-          <td>${esc(s.ts)}</td>
-          <td style="color:var(--dim)">${fmtBytes(s.size)}</td>
-          <td>
-            <button onclick="viewSnapshot('${esc(s.id)}')">View</button>
-            <button class="btn-danger" onclick="deleteSnapshot('${esc(s.id)}')" style="margin-left:4px">Delete</button>
-          </td>
-        </tr>`).join('')}</tbody>
-      </table>
+      <table><thead><tr><th>Timestamp</th><th>File Size</th><th style="width:180px"></th></tr></thead>
+      <tbody>${_snapData.map(s=>`<tr>
+        <td><strong>${esc(s.ts)}</strong></td>
+        <td style="color:var(--dim)">${fmtBytes(s.size)}</td>
+        <td>
+          <button class="btn" onclick="viewSnapshot('${esc(s.id)}')">View</button>
+          <button class="btn btn-danger" onclick="deleteSnapshot('${esc(s.id)}')" style="margin-left:6px">Delete</button>
+        </td>
+      </tr>`).join('')}</tbody></table>
     </div></div>`;
   }catch(e){}
 }
 
-async function takeSnapshot(){
-  const btn=event.target;
+async function takeSnapshot(btn){
   btn.disabled=true;btn.textContent='Capturing…';
   try{
     const d=await fetch('/api/snapshot',{method:'POST'}).then(r=>r.json());
-    if(d.ok){
-      btn.textContent='Saved!';
-      setTimeout(()=>{btn.textContent='&#128247; Take Snapshot';btn.disabled=false;},1500);
-      loadSnapshots();
-    }
-  }catch(e){btn.textContent='Error';btn.disabled=false;}
+    if(d.ok){btn.textContent='Saved!';setTimeout(()=>{btn.textContent='Take Snapshot';btn.disabled=false},1800);loadSnapshots()}
+  }catch(e){btn.textContent='Error';btn.disabled=false}
 }
 
 async function viewSnapshot(id){
   try{
     const d=await fetch(`/api/snapshot/${id}`).then(r=>r.json());
+    _snapDetail=d;
     document.getElementById('snap-list-view').style.display='none';
     document.getElementById('snap-detail-view').style.display='';
-    document.getElementById('snap-detail-title').textContent=`Snapshot: ${d.ts}`;
-
-    // Sysinfo cards
-    const si=d.sysinfo||{};
-    document.getElementById('snap-cards').innerHTML=`
-      <div class="card"><div class="card-label">CPU</div>
-        <div class="card-value ${pClass(si.cpu||0)}">${si.cpu||0}%</div></div>
-      <div class="card"><div class="card-label">Memory</div>
-        <div class="card-value ${pClass(si.mem_pct||0)}">${si.mem_pct||0}%</div>
-        <div class="card-sub">${fmtBytes(si.mem_used||0)} / ${fmtBytes(si.mem_total||0)}</div></div>
-      <div class="card"><div class="card-label">Disk</div>
-        <div class="card-value ${pClass(si.disk_pct||0,80,92)}">${si.disk_pct||0}%</div></div>
-      <div class="card"><div class="card-label">Temp</div>
-        <div class="card-value ${si.temp>80?'danger':si.temp>65?'warn':'ok'}">${si.temp!=null?si.temp+'°C':'--'}</div></div>
-      <div class="card"><div class="card-label">Uptime</div>
-        <div class="card-value" style="font-size:16px">${fmtUptime(si.uptime||0)}</div></div>`;
-
-    // Integrity alerts
-    const integ=d.integrity||[];
-    const changed=integ.filter(f=>f.status==='CHANGED');
-    document.getElementById('snap-integrity-alerts').innerHTML=changed.length
-      ?`<div class="alert alert-danger">&#9888; ${changed.length} file(s) CHANGED at snapshot time: ${changed.map(f=>f.path).join(', ')}</div>`:'';
-
-    // SSH events
-    const ssh=d.ssh_events||[];
-    document.getElementById('snap-ssh-body').innerHTML=ssh.map(e=>`<tr>
-      <td style="color:var(--dim);font-size:11px">${esc(e.ts)}</td>
-      <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
-      <td class="mono">${esc(e.user)}</td>
-      <td class="mono">${esc(e.ip)}</td>
-      <td style="color:var(--dim)">${esc(e.method)}</td>
-    </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events in snapshot</td></tr>';
-
-    // Top processes
-    const procs=d.processes||[];
-    document.getElementById('snap-proc-body').innerHTML=procs.slice(0,20).map(p=>`<tr>
-      <td class="mono">${p.pid}</td>
-      <td><strong>${esc(p.name)}</strong></td>
-      <td class="${p.user==='root'?'warn':''}">${esc(p.user)}</td>
-      <td class="${pClass(p.cpu,30,70)}">${p.cpu.toFixed(1)}</td>
-      <td class="${pClass(p.mem,15,30)}">${p.mem.toFixed(2)}</td>
-      <td><span class="badge ${p.status==='running'?'b-green':'b-gray'}">${p.status}</span></td>
-    </tr>`).join('')||'<tr><td colspan="6" class="loading">No process data</td></tr>';
-
-    // Failed services only
-    const failed=(d.services||[]).filter(s=>s.active==='failed');
-    document.getElementById('snap-svc-body').innerHTML=failed.map(s=>`<tr>
-      <td><strong>${esc(s.name)}</strong></td>
-      <td><span class="badge b-red">${s.active}</span></td>
-      <td><span class="badge b-gray">${s.sub}</span></td>
-      <td style="color:var(--dim)">${esc(s.desc)}</td>
-    </tr>`).join('')||'<tr><td colspan="4" class="loading">No failed services at snapshot time</td></tr>';
-
+    document.getElementById('snap-detail-title').textContent=`Snapshot — ${d.ts}`;
+    switchSnapTab(document.querySelector('#snap-subtabs .stab'),'overview');
   }catch(e){}
 }
 
+function switchSnapTab(el,tab){
+  document.querySelectorAll('#snap-subtabs .stab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['overview','processes','network','services','logs','packages','integrity','ssh'].forEach(t=>
+    document.getElementById('snapv-'+t).style.display=t===tab?'':'none');
+  if(!_snapDetail)return;
+  const d=_snapDetail;
+  if(tab==='overview')renderSnapOverview(d);
+  else if(tab==='processes')renderSnapProcs(d.processes||[]);
+  else if(tab==='network')renderSnapNetwork(d.network||{});
+  else if(tab==='services')renderSnapSvcs(d.services||[]);
+  else if(tab==='logs'){renderSnapLog(d,'auth');document.querySelectorAll('#snap-log-subtabs .stab').forEach((t,i)=>t.classList.toggle('active',i===0))}
+  else if(tab==='packages')renderSnapPkgs(d.packages||[]);
+  else if(tab==='integrity')renderSnapIntegrity(d.integrity||[]);
+  else if(tab==='ssh')renderSnapSsh(d.ssh_events||[]);
+}
+
+function renderSnapOverview(d){
+  const si=d.sysinfo||{};
+  document.getElementById('snap-cards').innerHTML=`
+    <div class="card"><div class="card-label">CPU</div><div class="card-value ${pClass(si.cpu||0)}">${si.cpu||0}%</div></div>
+    <div class="card"><div class="card-label">Memory</div><div class="card-value ${pClass(si.mem_pct||0)}">${si.mem_pct||0}%</div>
+      <div class="card-sub">${fmtBytes(si.mem_used||0)} / ${fmtBytes(si.mem_total||0)}</div></div>
+    <div class="card"><div class="card-label">Disk</div><div class="card-value ${pClass(si.disk_pct||0,80,92)}">${si.disk_pct||0}%</div></div>
+    <div class="card"><div class="card-label">Temperature</div><div class="card-value ${si.temp>80?'danger':si.temp>65?'warn':'ok'}">${si.temp!=null?si.temp+'°C':'—'}</div></div>
+    <div class="card"><div class="card-label">Uptime</div><div class="card-value" style="font-size:20px">${fmtUptime(si.uptime||0)}</div></div>
+    <div class="card"><div class="card-label">Load</div><div class="card-value" style="font-size:20px">${(si.load&&si.load[0])||'—'}</div>
+      <div class="card-sub">${(si.load||[0,0,0]).map(x=>x.toFixed?x.toFixed(2):x).join(' · ')}</div></div>`;
+
+  const changed=(d.integrity||[]).filter(f=>f.status==='CHANGED');
+  document.getElementById('snap-integrity-alerts').innerHTML=changed.length
+    ?`<div class="alert alert-danger"><span class="alert-icon">&#9888;</span><div>${changed.length} file(s) changed at snapshot time: <strong>${changed.map(f=>f.path).join(', ')}</strong></div></div>`:'';
+
+  document.getElementById('snap-cron-body').innerHTML=(d.cronjobs||[]).map(c=>`<tr>
+    <td style="color:var(--dim)" class="mono">${esc(c.source)}</td><td class="mono">${esc(c.entry)}</td>
+  </tr>`).join('')||'<tr><td colspan="2" class="loading">No cron entries</td></tr>';
+
+  document.getElementById('snap-auto-body').innerHTML=(d.autostart||[]).map(a=>`<tr>
+    <td><span class="badge ${a.type==='systemd'?'b-indigo':'b-gray'}">${esc(a.type)}</span></td>
+    <td>${esc(a.name)}</td>
+    <td><span class="badge ${a.state==='enabled'||a.state==='exists'?'b-green':'b-gray'}">${esc(a.state)}</span></td>
+  </tr>`).join('')||'<tr><td colspan="3" class="loading">No autostart items</td></tr>';
+}
+
+function renderSnapProcs(procs){
+  document.getElementById('snap-proc-body').innerHTML=procs.map(p=>`<tr>
+    <td class="mono" style="color:var(--dim)">${p.pid}</td>
+    <td><strong>${esc(p.name)}</strong></td>
+    <td class="${p.user==='root'?'warn':''}">${esc(p.user)}</td>
+    <td class="${pClass(p.cpu,30,70)}">${p.cpu.toFixed(1)}</td>
+    <td class="${pClass(p.mem,15,30)}">${p.mem.toFixed(2)}</td>
+    <td><span class="badge ${p.status==='running'?'b-green':'b-gray'}">${p.status}</span></td>
+    <td class="mono">${esc(p.cmd)}</td>
+  </tr>`).join('')||'<tr><td colspan="7" class="loading">No process data</td></tr>';
+}
+
+function renderSnapNetwork(net){
+  let html='';
+  for(const[name,s]of Object.entries(net.interfaces||{}))
+    html+=`<tr><td><strong>${esc(name)}</strong></td><td>${fmtBytes(s.recv)}</td><td>${fmtBytes(s.sent)}</td>
+      <td class="${s.errin>0?'danger':''}">${s.errin}</td><td class="${s.errout>0?'danger':''}">${s.errout}</td></tr>`;
+  document.getElementById('snap-iface-body').innerHTML=html||'<tr><td colspan="5" class="loading">No interface data</td></tr>';
+  document.getElementById('snap-conn-body').innerHTML=(net.connections||[]).map(x=>`<tr>
+    <td><span class="badge ${x.proto==='TCP'?'b-blue':'b-purple'}">${x.proto}</span></td>
+    <td class="mono">${esc(x.laddr)}</td><td class="mono">${esc(x.raddr)}</td>
+    <td><span class="badge ${statusBadge(x.status)}">${esc(x.status)}</span></td>
+    <td>${x.pid||''}</td>
+  </tr>`).join('')||'<tr><td colspan="5" class="loading">No connections</td></tr>';
+}
+
+function renderSnapSvcs(svcs){
+  document.getElementById('snap-svc-body').innerHTML=svcs.map(s=>`<tr>
+    <td><strong>${esc(s.name)}</strong></td>
+    <td><span class="badge ${s.load==='loaded'?'b-green':'b-gray'}">${s.load}</span></td>
+    <td><span class="badge ${activeBadge(s.active)}">${s.active}</span></td>
+    <td><span class="badge b-gray">${s.sub}</span></td>
+    <td style="color:var(--dim)">${esc(s.desc)}</td>
+  </tr>`).join('')||'<tr><td colspan="5" class="loading">No services</td></tr>';
+}
+
+function switchSnapLog(el,key){
+  document.querySelectorAll('#snap-log-subtabs .stab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');_snapLogKey=key;
+  if(_snapDetail)renderSnapLog(_snapDetail,key);
+}
+function renderSnapLog(d,key){
+  const lines=(d.logs||{})[key]||[];
+  const viewer=document.getElementById('snap-log-viewer');
+  if(!lines.length){viewer.innerHTML='<div class="loading">No log data in this snapshot</div>';return}
+  renderLog(lines,'snap-log-viewer');
+}
+
+let _snapPkgData=[];
+function renderSnapPkgs(pkgs){
+  _snapPkgData=pkgs;
+  document.getElementById('snap-pkg-count').textContent=`${pkgs.length} packages`;
+  _renderSnapPkgTable();
+}
+function renderSnapPkgTable(){
+  const f=document.getElementById('snap-pkg-filter').value.toLowerCase();
+  const data=f?_snapPkgData.filter(p=>p.name.toLowerCase().includes(f)):_snapPkgData;
+  document.getElementById('snap-pkg-body').innerHTML=data.map(p=>`<tr>
+    <td>${esc(p.name)}</td><td class="mono" style="color:var(--dim)">${esc(p.version)}</td>
+    <td class="mono" style="color:var(--dim)">${p.size}</td>
+  </tr>`).join('');
+}
+// alias for oninput
+function renderSnapPkgs_filter(){_renderSnapPkgTable()}
+const _renderSnapPkgTable=()=>{
+  const f=document.getElementById('snap-pkg-filter')?.value.toLowerCase()||'';
+  const data=f?_snapPkgData.filter(p=>p.name.toLowerCase().includes(f)):_snapPkgData;
+  const el=document.getElementById('snap-pkg-body');
+  if(el)el.innerHTML=data.map(p=>`<tr>
+    <td>${esc(p.name)}</td><td class="mono" style="color:var(--dim)">${esc(p.version)}</td>
+    <td class="mono" style="color:var(--dim)">${p.size}</td>
+  </tr>`).join('');
+};
+
+function renderSnapIntegrity(files){
+  document.getElementById('snap-int-body').innerHTML=files.map(f=>`<tr class="${f.status==='CHANGED'?'row-changed':f.status==='no-baseline'?'row-warn':''}">
+    <td class="mono">${esc(f.path)}</td>
+    <td class="mono" style="color:var(--dim)">${esc(f.hash)}</td>
+    <td class="mono" style="color:var(--dim)">${esc(f.baseline)}</td>
+    <td style="color:var(--dim)">${esc(f.mtime)}</td>
+    <td><span class="badge ${intBadge(f.status)}">${esc(f.status)}</span></td>
+  </tr>`).join('')||'<tr><td colspan="5" class="loading">No integrity data</td></tr>';
+}
+
+function renderSnapSsh(events){
+  document.getElementById('snap-ssh-body').innerHTML=events.map(e=>`<tr>
+    <td style="color:var(--dim)" class="mono">${esc(e.ts)}</td>
+    <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
+    <td>${esc(e.user)}</td><td class="mono">${esc(e.ip)}</td>
+    <td style="color:var(--dim)">${esc(e.method)}</td>
+  </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events in snapshot</td></tr>';
+}
+
 function closeSnapDetail(){
+  _snapDetail=null;
   document.getElementById('snap-detail-view').style.display='none';
   document.getElementById('snap-list-view').style.display='';
 }
 
 async function deleteSnapshot(id){
   if(!confirm('Delete this snapshot?'))return;
-  try{
-    await fetch(`/api/snapshot/${id}`,{method:'DELETE'});
-    loadSnapshots();
-  }catch(e){}
+  await fetch(`/api/snapshot/${id}`,{method:'DELETE'});
+  loadSnapshots();
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────

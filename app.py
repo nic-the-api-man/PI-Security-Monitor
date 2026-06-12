@@ -399,22 +399,20 @@ def _ssh_events(n: int = 100) -> list[dict]:
 def _take_snapshot() -> dict:
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
     snap_id = datetime.now().strftime('%Y%m%d_%H%M%S')
-    net = _network()
+    logs = {name: _tail(path, 200) for name, path in LOG_FILES.items()}
     data = {
-        'id':        snap_id,
-        'ts':        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'sysinfo':   _sysinfo(),
-        'processes': _processes()[:50],
-        'network': {
-            'connections': net['connections'][:50],
-            'total':       net['total'],
-            'interfaces':  net['interfaces'],
-        },
+        'id':         snap_id,
+        'ts':         datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'sysinfo':    _sysinfo(),
+        'processes':  _processes(),
+        'network':    _network(),
         'services':   _services(),
         'integrity':  _integrity(),
         'cronjobs':   _cronjobs(),
         'autostart':  _autostart(),
-        'ssh_events': _ssh_events(50),
+        'ssh_events': _ssh_events(200),
+        'packages':   _packages(),
+        'logs':       logs,
     }
     path = os.path.join(SNAPSHOT_DIR, f'snapshot_{snap_id}.json')
     with open(path, 'w') as f:

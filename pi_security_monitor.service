@@ -1,0 +1,25 @@
+[Unit]
+Description=Pi Security Monitor
+Documentation=https://github.com/your-repo
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/pi-security-monitor
+ExecStart=/opt/pi-security-monitor/venv/bin/python app.py
+Restart=on-failure
+RestartSec=5
+
+# RAM guardrail — kills and restarts if the process exceeds 450MB
+MemoryMax=450M
+# Allow 50% CPU so Pi-hole + DNS remain responsive
+CPUQuota=50%
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pi-sec-monitor
+
+[Install]
+WantedBy=multi-user.target

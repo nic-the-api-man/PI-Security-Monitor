@@ -38,10 +38,25 @@ systemctl daemon-reload
 systemctl enable pi_security_monitor
 systemctl restart pi_security_monitor
 
+echo "[*] Creating snapshots directory..."
+mkdir -p "$APP_DIR/snapshots"
+
+echo "[*] Installing 30-day log retention (logrotate)..."
+# Disable rsyslog's own logrotate config to avoid duplicate-entry errors
+if [ -f /etc/logrotate.d/rsyslog ]; then
+  mv /etc/logrotate.d/rsyslog /etc/logrotate.d/rsyslog.disabled
+fi
+cp config/logrotate /etc/logrotate.d/pi-security-monitor
+
 echo ""
 echo "=== Installation complete! ==="
 echo ""
-echo "  Web UI: http://$(hostname -I | awk '{print $1}'):5000"
+echo "  Web UI:     http://$(hostname -I | awk '{print $1}'):5000"
+echo ""
+echo "  Set password:"
+echo "    echo 'MONITOR_PASSWORD=yourpassword' > $APP_DIR/.env"
+echo "    chmod 600 $APP_DIR/.env"
+echo "    systemctl restart pi_security_monitor"
 echo ""
 echo "  Status:  systemctl status pi_security_monitor"
 echo "  Logs:    journalctl -u pi_security_monitor -f"

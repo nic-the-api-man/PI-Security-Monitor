@@ -71,6 +71,8 @@ _SSH_RE = [
     (re.compile(r'Invalid user (\S+) from ([\d.:a-fA-F]+)'), 'invalid'),
 ]
 
+SNAPSHOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snapshots')
+
 # ── TTL CACHE (thread-safe, no deps) ────────────────────────────────────────
 _cache: dict = {}
 _lock = threading.Lock()
@@ -394,6 +396,53 @@ def _ssh_events(n: int = 100) -> list[dict]:
     return events[:n]
 
 
+def _take_snapshot() -> dict:
+    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+    snap_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+    net = _network()
+    data = {
+        'id':        snap_id,
+        'ts':        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'sysinfo':   _sysinfo(),
+        'processes': _processes()[:50],
+        'network': {
+            'connections': net['connections'][:50],
+            'total':       net['total'],
+            'interfaces':  net['interfaces'],
+        },
+        'services':   _services(),
+        'integrity':  _integrity(),
+        'cronjobs':   _cronjobs(),
+        'autostart':  _autostart(),
+        'ssh_events': _ssh_events(50),
+    }
+    path = os.path.join(SNAPSHOT_DIR, f'snapshot_{snap_id}.json')
+    with open(path, 'w') as f:
+        json.dump(data, f)
+    return {'id': snap_id, 'ts': data['ts'], 'size': os.path.getsize(path)}
+
+
+def _list_snapshots() -> list[dict]:
+    try:
+        os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+        snaps = []
+        for fname in sorted(os.listdir(SNAPSHOT_DIR), reverse=True):
+            if not (fname.startswith('snapshot_') and fname.endswith('.json')):
+                continue
+            snap_id = fname[9:-5]
+            if not re.match(r'^\d{8}_\d{6}$', snap_id):
+                continue
+            path = os.path.join(SNAPSHOT_DIR, fname)
+            try:
+                ts = datetime.strptime(snap_id, '%Y%m%d_%H%M%S').strftime('%Y-%m-%d %H:%M:%S')
+            except Exception:
+                ts = snap_id
+            snaps.append({'id': snap_id, 'ts': ts, 'size': os.path.getsize(path)})
+        return snaps
+    except Exception:
+        return []
+
+
 # ── ROUTES ───────────────────────────────────────────────────────────────────
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -488,6 +537,39 @@ def api_ssh_events():
     n = min(int(request.args.get('n', 100)), 500)
     return jsonify({'events': cached(f'ssh:{n}', 15, _ssh_events, n)})
 
+@app.route('/api/snapshots')
+@login_required
+def api_list_snapshots():
+    return jsonify({'snapshots': _list_snapshots()})
+
+@app.route('/api/snapshot', methods=['POST'])
+@login_required
+def api_take_snapshot():
+    result = _take_snapshot()
+    return jsonify({'ok': True, **result})
+
+@app.route('/api/snapshot/<snap_id>')
+@login_required
+def api_get_snapshot(snap_id):
+    if not re.match(r'^\d{8}_\d{6}$', snap_id):
+        return jsonify({'error': 'invalid id'}), 400
+    path = os.path.join(SNAPSHOT_DIR, f'snapshot_{snap_id}.json')
+    if not os.path.exists(path):
+        return jsonify({'error': 'not found'}), 404
+    with open(path) as f:
+        return jsonify(json.load(f))
+
+@app.route('/api/snapshot/<snap_id>', methods=['DELETE'])
+@login_required
+def api_delete_snapshot(snap_id):
+    if not re.match(r'^\d{8}_\d{6}$', snap_id):
+        return jsonify({'error': 'invalid id'}), 400
+    path = os.path.join(SNAPSHOT_DIR, f'snapshot_{snap_id}.json')
+    if not os.path.exists(path):
+        return jsonify({'error': 'not found'}), 404
+    os.remove(path)
+    return jsonify({'ok': True})
+
 
 if __name__ == '__main__':
     if not MONITOR_PASSWORD:
@@ -500,4 +582,6 @@ if __name__ == '__main__':
         if h not in ('PERM_DENIED','NOT_FOUND') and not h.startswith('ERR'):
             _baseline[p] = h
     print(f'[*] Baseline set for {len(_baseline)} files')
+    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+    print(f'[*] Snapshots dir: {SNAPSHOT_DIR}')
     app.run(host='0.0.0.0', port=PORT, debug=False, threaded=True)

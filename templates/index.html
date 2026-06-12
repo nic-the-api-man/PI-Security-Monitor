@@ -6,33 +6,45 @@
 <title>Pi Security Monitor</title>
 <style>
 :root{
-  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
-  --text:#e6edf3;--dim:#8b949e;
-  --green:#3fb950;--red:#f85149;--yellow:#e3b341;--blue:#58a6ff;--purple:#d2a8ff;
+  --bg:#0a0f0a;--bg2:#111811;--bg3:#1a221a;--border:#2a3a2a;
+  --text:#d4e8d4;--dim:#6a8a6a;
+  --green:#4caf50;--red:#ef5350;--yellow:#ffb300;--blue:#29b6f6;--purple:#ab47bc;
+  --accent:#4caf50;--accent-dim:#1a3a1a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;font-size:13px;min-height:100vh}
 a{color:var(--blue);text-decoration:none}
 
-/* ── LAYOUT ── */
-.header{background:var(--bg2);padding:8px 16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.header h1{font-size:13px;color:var(--green);letter-spacing:.5px}
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(90deg,#0a1a0a,#111811);
+  padding:10px 18px;border-bottom:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10}
+.header-brand{display:flex;align-items:center;gap:10px}
+.header-brand .logo{color:var(--accent);font-size:18px;font-weight:700;letter-spacing:2px}
+.header-brand .subtitle{color:var(--dim);font-size:10px;letter-spacing:1px;text-transform:uppercase}
 .header-right{display:flex;gap:16px;align-items:center;color:var(--dim);font-size:12px}
-.tabs{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;
-  overflow-x:auto;position:sticky;top:37px;z-index:9}
-.tab{padding:8px 14px;cursor:pointer;color:var(--dim);white-space:nowrap;
-  border-bottom:2px solid transparent;font-size:12px;transition:color .15s}
+.header-right .pill{background:var(--bg3);border:1px solid var(--border);
+  border-radius:12px;padding:2px 10px;font-size:11px}
+
+/* ── TABS ── */
+.tabs{background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;overflow-x:auto;position:sticky;top:43px;z-index:9}
+.tab{padding:9px 16px;cursor:pointer;color:var(--dim);white-space:nowrap;
+  border-bottom:3px solid transparent;font-size:11px;letter-spacing:.5px;
+  text-transform:uppercase;transition:color .15s}
 .tab:hover{color:var(--text);background:var(--bg3)}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-dim)}
 .content{padding:14px}
 .panel{display:none}
 .panel.active{display:block}
 
 /* ── CARDS ── */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px}
-.card-label{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;
+  border-left:3px solid var(--accent)}
+.card-label{color:var(--dim);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .card-value{font-size:22px;font-weight:700;line-height:1}
 .card-sub{color:var(--dim);font-size:11px;margin-top:4px}
 .bar{background:var(--bg3);height:3px;border-radius:2px;margin-top:8px}
@@ -41,20 +53,21 @@ a{color:var(--blue);text-decoration:none}
 .bar-fill.danger{background:var(--red)}
 
 /* ── TABLES ── */
-.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;margin-bottom:14px}
 .table-scroll{overflow:auto;max-height:520px}
 table{width:100%;border-collapse:collapse;min-width:400px}
-thead th{text-align:left;padding:7px 10px;color:var(--dim);font-size:10px;
-  text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);
+thead th{text-align:left;padding:7px 10px;color:var(--accent);font-size:9px;
+  text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);
   background:var(--bg3);position:sticky;top:0;cursor:pointer;user-select:none;white-space:nowrap}
 thead th:hover{color:var(--text)}
-td{padding:5px 10px;border-bottom:1px solid var(--bg3);vertical-align:middle;max-width:320px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td{padding:5px 10px;border-bottom:1px solid var(--bg3);vertical-align:middle;
+  max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
 
 /* ── LOG VIEWER ── */
-.log-box{background:#070b0f;border:1px solid var(--border);border-radius:6px;
+.log-box{background:#040804;border:1px solid var(--border);border-radius:6px;
   padding:10px;overflow-y:auto;font-family:monospace;font-size:11.5px;line-height:1.6}
 .log-line{white-space:pre-wrap;word-break:break-all;padding:1px 0}
 .log-err{color:var(--red)}
@@ -63,43 +76,46 @@ tr:hover td{background:var(--bg3)}
 .log-info{color:var(--blue)}
 
 /* ── BADGES ── */
-.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;white-space:nowrap}
-.b-green{background:#0d4429;color:var(--green)}
-.b-red{background:#3d1010;color:var(--red)}
-.b-yellow{background:#3d2a00;color:var(--yellow)}
-.b-blue{background:#0d2040;color:var(--blue)}
-.b-gray{background:var(--bg3);color:var(--dim)}
-.b-purple{background:#2a1a3d;color:var(--purple)}
+.badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;
+  font-weight:700;white-space:nowrap;letter-spacing:.3px}
+.b-green{background:#0d2e0d;color:var(--green);border:1px solid #1a4a1a}
+.b-red{background:#2e0d0d;color:var(--red);border:1px solid #4a1a1a}
+.b-yellow{background:#2e1e00;color:var(--yellow);border:1px solid #4a3000}
+.b-blue{background:#0d1e2e;color:var(--blue);border:1px solid #1a304a}
+.b-gray{background:var(--bg3);color:var(--dim);border:1px solid var(--border)}
+.b-purple{background:#1e0d2e;color:var(--purple);border:1px solid #301a4a}
 
 /* ── CONTROLS ── */
 .controls{display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap}
 input[type=text],select{background:var(--bg2);border:1px solid var(--border);
   color:var(--text);padding:5px 10px;border-radius:4px;font-family:monospace;font-size:12px}
-input[type=text]:focus,select:focus{outline:none;border-color:var(--blue)}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--accent)}
 input[type=text]{min-width:180px}
 button{background:var(--bg3);border:1px solid var(--border);color:var(--text);
-  padding:5px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px}
+  padding:5px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;
+  transition:background .15s}
 button:hover{background:var(--border)}
-button.btn-primary{background:#0d2040;border-color:var(--blue);color:var(--blue)}
-button.btn-danger{background:#3d1010;border-color:var(--red);color:var(--red)}
+button.btn-primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+button.btn-danger{background:#2e0d0d;border-color:var(--red);color:var(--red)}
 .count-label{color:var(--dim);font-size:11px;margin-left:4px}
 
 /* ── SUBTABS ── */
 .subtabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
 .stab{padding:4px 12px;border:1px solid var(--border);border-radius:4px;
-  cursor:pointer;color:var(--dim);font-size:12px}
+  cursor:pointer;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
 .stab:hover{color:var(--text)}
-.stab.active{border-color:var(--blue);color:var(--blue);background:#0d2040}
+.stab.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 
 /* ── ALERTS ── */
 .alert{border-radius:5px;padding:9px 13px;margin-bottom:10px;font-size:12px}
-.alert-danger{background:#3d1010;border:1px solid var(--red);color:var(--red)}
-.alert-warn{background:#3d2a00;border:1px solid var(--yellow);color:var(--yellow)}
-.alert-info{background:#0d2040;border:1px solid var(--blue);color:var(--blue)}
+.alert-danger{background:#2e0d0d;border:1px solid var(--red);color:var(--red)}
+.alert-warn{background:#2e1e00;border:1px solid var(--yellow);color:var(--yellow)}
+.alert-info{background:#0d1e2e;border:1px solid var(--blue);color:var(--blue)}
 
 /* ── MISC ── */
-.section-title{color:var(--dim);font-size:10px;text-transform:uppercase;
-  letter-spacing:1px;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.section-title{color:var(--accent);font-size:9px;text-transform:uppercase;
+  letter-spacing:1.5px;margin:14px 0 8px;padding-bottom:4px;
+  border-bottom:1px solid var(--border)}
 .ok{color:var(--green)}.warn{color:var(--yellow)}.danger{color:var(--red)}
 .loading{color:var(--dim);padding:20px;text-align:center;font-size:12px}
 .mono{font-family:monospace;font-size:11px}
@@ -108,32 +124,35 @@ button.btn-danger{background:#3d1010;border-color:var(--red);color:var(--red)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.two-col{grid-template-columns:1fr}}
-
-/* integrity CHANGED row */
-tr.row-changed td{background:#3d1010 !important}
-tr.row-warn td{background:#3d2a00 !important}
+tr.row-changed td{background:#2e0d0d !important}
+tr.row-warn td{background:#2e1e00 !important}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>&#9724; Pi Security Monitor</h1>
+  <div class="header-brand">
+    <div class="logo">&#9632; PSM</div>
+    <div class="subtitle">Pi Security Monitor</div>
+  </div>
   <div class="header-right">
-    <span id="hdr-load"></span>
-    <span id="hdr-ts">--:--:--</span>
-    <a href="/logout" style="color:var(--dim);font-size:11px;margin-left:8px">logout</a>
+    <span class="pill" id="hdr-load">load: --</span>
+    <span class="pill" id="hdr-ts">--:--:--</span>
+    <a href="/logout" style="color:var(--dim);font-size:11px;border:1px solid var(--border);
+      padding:2px 10px;border-radius:12px">logout</a>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active"  onclick="showTab('dashboard')">&#9632; Dashboard</div>
-  <div class="tab" onclick="showTab('logs')">&#128196; Logs</div>
-  <div class="tab" onclick="showTab('network')">&#127760; Network</div>
-  <div class="tab" onclick="showTab('processes')">&#9881; Processes</div>
-  <div class="tab" onclick="showTab('services')">&#128295; Services</div>
-  <div class="tab" onclick="showTab('integrity')">&#128274; Integrity</div>
-  <div class="tab" onclick="showTab('packages')">&#128230; Packages</div>
-  <div class="tab" onclick="showTab('investigate')">&#128269; Investigate</div>
+  <div class="tab active"  onclick="showTab('dashboard')">Dashboard</div>
+  <div class="tab" onclick="showTab('logs')">Logs</div>
+  <div class="tab" onclick="showTab('network')">Network</div>
+  <div class="tab" onclick="showTab('processes')">Processes</div>
+  <div class="tab" onclick="showTab('services')">Services</div>
+  <div class="tab" onclick="showTab('integrity')">Integrity</div>
+  <div class="tab" onclick="showTab('packages')">Packages</div>
+  <div class="tab" onclick="showTab('investigate')">Investigate</div>
+  <div class="tab" onclick="showTab('snapshots')">Snapshots</div>
 </div>
 
 <div class="content">
@@ -373,8 +392,8 @@ tr.row-warn td{background:#3d2a00 !important}
 ══════════════════════════════════════════════════════════ -->
 <div id="tab-investigate" class="panel">
   <div class="subtabs">
-    <div class="stab active" onclick="switchInv(this,'crons')">&#128336; Cronjobs</div>
-    <div class="stab"        onclick="switchInv(this,'autostart')">&#128640; Autostart</div>
+    <div class="stab active" onclick="switchInv(this,'crons')">Cronjobs</div>
+    <div class="stab"        onclick="switchInv(this,'autostart')">Autostart</div>
   </div>
 
   <div id="inv-crons">
@@ -406,6 +425,57 @@ tr.row-warn td{background:#3d2a00 !important}
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════
+     SNAPSHOTS
+══════════════════════════════════════════════════════════ -->
+<div id="tab-snapshots" class="panel">
+
+  <!-- List view -->
+  <div id="snap-list-view">
+    <div class="controls">
+      <button class="btn-primary" onclick="takeSnapshot()">&#128247; Take Snapshot</button>
+      <button onclick="loadSnapshots()">&#8635; Refresh</button>
+      <span class="count-label" id="snap-count"></span>
+    </div>
+    <div id="snap-list"><div class="loading">loading…</div></div>
+  </div>
+
+  <!-- Detail view (hidden until a snapshot is opened) -->
+  <div id="snap-detail-view" style="display:none">
+    <div class="controls" style="margin-bottom:14px">
+      <button onclick="closeSnapDetail()">&#8592; Back to list</button>
+      <span id="snap-detail-title" style="color:var(--dim);font-size:12px;margin-left:8px"></span>
+    </div>
+
+    <div class="cards" id="snap-cards"></div>
+    <div id="snap-integrity-alerts"></div>
+
+    <div class="section-title">SSH Events</div>
+    <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
+      <table>
+        <thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP</th><th>Method</th></tr></thead>
+        <tbody id="snap-ssh-body"></tbody>
+      </table>
+    </div></div>
+
+    <div class="section-title">Top Processes</div>
+    <div class="table-wrap"><div class="table-scroll" style="max-height:220px">
+      <table>
+        <thead><tr><th>PID</th><th>Name</th><th>User</th><th>CPU%</th><th>MEM%</th><th>Status</th></tr></thead>
+        <tbody id="snap-proc-body"></tbody>
+      </table>
+    </div></div>
+
+    <div class="section-title">Services — Failed</div>
+    <div class="table-wrap"><div class="table-scroll" style="max-height:200px">
+      <table>
+        <thead><tr><th>Service</th><th>Active</th><th>Sub</th><th>Description</th></tr></thead>
+        <tbody id="snap-svc-body"></tbody>
+      </table>
+    </div></div>
+  </div>
+</div>
+
 </div><!-- /content -->
 
 <script>
@@ -417,11 +487,12 @@ let _timer = null;
 let _sysTimer = null;
 
 let _procsData = [];
-let _svcsData = [];
+let _svcsData  = [];
 let _netData   = null;
 let _pkgData   = [];
 let _cronData  = [];
 let _autoData  = [];
+let _snapData  = [];
 let _procSort  = 'cpu';
 let _pkgSort   = 'size';
 
@@ -467,7 +538,6 @@ function renderLog(lines,targetId,filterVal=''){
   return filtered.length;
 }
 
-// status badge helpers
 function statusBadge(s){
   if(s==='ESTABLISHED')return'b-green';
   if(s==='LISTEN')return'b-blue';
@@ -487,18 +557,16 @@ function intBadge(s){
   return'b-gray';
 }
 
-// ── SYSINFO (always running) ─────────────────────────────────────────────────
+// ── SYSINFO ──────────────────────────────────────────────────────────────────
 async function loadSysinfo(){
   try{
     const d=await fetch('/api/sysinfo').then(r=>r.json());
     document.getElementById('hdr-ts').textContent=d.ts;
     document.getElementById('hdr-load').textContent=`load: ${d.load[0].toFixed(2)}`;
 
-    // CPU
     const cpuEl=document.getElementById('d-cpu');
     if(cpuEl){cpuEl.textContent=d.cpu+'%';cpuEl.className='card-value '+pClass(d.cpu);pBar('b-cpu',d.cpu)}
 
-    // Memory
     const memEl=document.getElementById('d-mem');
     if(memEl){
       memEl.textContent=d.mem_pct+'%';memEl.className='card-value '+pClass(d.mem_pct);
@@ -506,7 +574,6 @@ async function loadSysinfo(){
       pBar('b-mem',d.mem_pct);
     }
 
-    // Disk
     const diskEl=document.getElementById('d-disk');
     if(diskEl){
       diskEl.textContent=d.disk_pct+'%';diskEl.className='card-value '+pClass(d.disk_pct,80,92);
@@ -514,21 +581,18 @@ async function loadSysinfo(){
       pBar('b-disk',d.disk_pct);
     }
 
-    // Temp
     const tempEl=document.getElementById('d-temp');
     if(tempEl&&d.temp!==null){
       tempEl.textContent=d.temp+'°C';
       tempEl.className='card-value '+(d.temp>80?'danger':d.temp>65?'warn':'ok');
     }
 
-    // Load
     const loadEl=document.getElementById('d-load');
     if(loadEl){
       loadEl.textContent=d.load[0].toFixed(2);
       document.getElementById('d-load3').textContent=d.load.map(x=>x.toFixed(2)).join(' · ');
     }
 
-    // Uptime
     const upEl=document.getElementById('d-uptime');
     if(upEl)upEl.textContent=fmtUptime(d.uptime);
   }catch(e){}
@@ -552,6 +616,7 @@ function showTab(name){
     integrity:  [loadIntegrity,   30000],
     packages:   [loadPkgs,        null],
     investigate:[() => _inv==='crons'?loadCrons():loadAuto(), 30000],
+    snapshots:  [loadSnapshots,   null],
   };
   const [fn, interval] = tabActions[name] || [()=>{}, null];
   fn();
@@ -638,8 +703,6 @@ function applyLogFilter(){
 async function loadNetwork(){
   try{
     _netData=await fetch('/api/network').then(r=>r.json());
-
-    // Interface table
     let html='';
     for(const[name,s]of Object.entries(_netData.interfaces)){
       html+=`<tr>
@@ -756,11 +819,11 @@ async function loadIntegrity(){
 
     let alerts='';
     if(changed.length)
-      alerts+=`<div class="alert alert-danger">&#9888; ${changed.length} file(s) CHANGED from baseline: ${changed.map(f=>f.path).join(', ')}</div>`;
+      alerts+=`<div class="alert alert-danger">&#9888; ${changed.length} file(s) CHANGED: ${changed.map(f=>f.path).join(', ')}</div>`;
     if(noBase.length)
-      alerts+=`<div class="alert alert-warn">No baseline set for ${noBase.length} file(s). Click "Set Baseline" to initialize.</div>`;
+      alerts+=`<div class="alert alert-warn">No baseline for ${noBase.length} file(s). Click "Set Baseline" to initialize.</div>`;
     if(errs.length)
-      alerts+=`<div class="alert alert-warn">${errs.length} file(s) could not be read (permission denied or missing).</div>`;
+      alerts+=`<div class="alert alert-warn">${errs.length} file(s) could not be read.</div>`;
     document.getElementById('int-alerts').innerHTML=alerts;
     document.getElementById('int-summary').textContent=`${ok} OK · ${changed.length} changed · ${errs.length} errors · ${noBase.length} no-baseline`;
 
@@ -855,6 +918,120 @@ function renderAuto(){
     <td><span class="badge ${a.state==='enabled'||a.state==='exists'?'b-green':'b-gray'}">${esc(a.state)}</span></td>
     <td class="mono" style="font-size:10px;color:var(--dim);max-width:300px">${esc((a.notes||'').substring(0,100))}</td>
   </tr>`).join('')||'<tr><td colspan="4" class="loading">No autostart items found</td></tr>';
+}
+
+// ── SNAPSHOTS ────────────────────────────────────────────────────────────────
+async function loadSnapshots(){
+  try{
+    const d=await fetch('/api/snapshots').then(r=>r.json());
+    _snapData=d.snapshots;
+    document.getElementById('snap-count').textContent=`${_snapData.length} snapshot${_snapData.length!==1?'s':''}`;
+    const el=document.getElementById('snap-list');
+    if(!_snapData.length){
+      el.innerHTML='<div class="loading">No snapshots yet. Click "Take Snapshot" to capture system state.</div>';
+      return;
+    }
+    el.innerHTML=`<div class="table-wrap"><div class="table-scroll">
+      <table>
+        <thead><tr><th>Timestamp</th><th>Size</th><th style="width:160px"></th></tr></thead>
+        <tbody>${_snapData.map(s=>`<tr>
+          <td>${esc(s.ts)}</td>
+          <td style="color:var(--dim)">${fmtBytes(s.size)}</td>
+          <td>
+            <button onclick="viewSnapshot('${esc(s.id)}')">View</button>
+            <button class="btn-danger" onclick="deleteSnapshot('${esc(s.id)}')" style="margin-left:4px">Delete</button>
+          </td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div></div>`;
+  }catch(e){}
+}
+
+async function takeSnapshot(){
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='Capturing…';
+  try{
+    const d=await fetch('/api/snapshot',{method:'POST'}).then(r=>r.json());
+    if(d.ok){
+      btn.textContent='Saved!';
+      setTimeout(()=>{btn.textContent='&#128247; Take Snapshot';btn.disabled=false;},1500);
+      loadSnapshots();
+    }
+  }catch(e){btn.textContent='Error';btn.disabled=false;}
+}
+
+async function viewSnapshot(id){
+  try{
+    const d=await fetch(`/api/snapshot/${id}`).then(r=>r.json());
+    document.getElementById('snap-list-view').style.display='none';
+    document.getElementById('snap-detail-view').style.display='';
+    document.getElementById('snap-detail-title').textContent=`Snapshot: ${d.ts}`;
+
+    // Sysinfo cards
+    const si=d.sysinfo||{};
+    document.getElementById('snap-cards').innerHTML=`
+      <div class="card"><div class="card-label">CPU</div>
+        <div class="card-value ${pClass(si.cpu||0)}">${si.cpu||0}%</div></div>
+      <div class="card"><div class="card-label">Memory</div>
+        <div class="card-value ${pClass(si.mem_pct||0)}">${si.mem_pct||0}%</div>
+        <div class="card-sub">${fmtBytes(si.mem_used||0)} / ${fmtBytes(si.mem_total||0)}</div></div>
+      <div class="card"><div class="card-label">Disk</div>
+        <div class="card-value ${pClass(si.disk_pct||0,80,92)}">${si.disk_pct||0}%</div></div>
+      <div class="card"><div class="card-label">Temp</div>
+        <div class="card-value ${si.temp>80?'danger':si.temp>65?'warn':'ok'}">${si.temp!=null?si.temp+'°C':'--'}</div></div>
+      <div class="card"><div class="card-label">Uptime</div>
+        <div class="card-value" style="font-size:16px">${fmtUptime(si.uptime||0)}</div></div>`;
+
+    // Integrity alerts
+    const integ=d.integrity||[];
+    const changed=integ.filter(f=>f.status==='CHANGED');
+    document.getElementById('snap-integrity-alerts').innerHTML=changed.length
+      ?`<div class="alert alert-danger">&#9888; ${changed.length} file(s) CHANGED at snapshot time: ${changed.map(f=>f.path).join(', ')}</div>`:'';
+
+    // SSH events
+    const ssh=d.ssh_events||[];
+    document.getElementById('snap-ssh-body').innerHTML=ssh.map(e=>`<tr>
+      <td style="color:var(--dim);font-size:11px">${esc(e.ts)}</td>
+      <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
+      <td class="mono">${esc(e.user)}</td>
+      <td class="mono">${esc(e.ip)}</td>
+      <td style="color:var(--dim)">${esc(e.method)}</td>
+    </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events in snapshot</td></tr>';
+
+    // Top processes
+    const procs=d.processes||[];
+    document.getElementById('snap-proc-body').innerHTML=procs.slice(0,20).map(p=>`<tr>
+      <td class="mono">${p.pid}</td>
+      <td><strong>${esc(p.name)}</strong></td>
+      <td class="${p.user==='root'?'warn':''}">${esc(p.user)}</td>
+      <td class="${pClass(p.cpu,30,70)}">${p.cpu.toFixed(1)}</td>
+      <td class="${pClass(p.mem,15,30)}">${p.mem.toFixed(2)}</td>
+      <td><span class="badge ${p.status==='running'?'b-green':'b-gray'}">${p.status}</span></td>
+    </tr>`).join('')||'<tr><td colspan="6" class="loading">No process data</td></tr>';
+
+    // Failed services only
+    const failed=(d.services||[]).filter(s=>s.active==='failed');
+    document.getElementById('snap-svc-body').innerHTML=failed.map(s=>`<tr>
+      <td><strong>${esc(s.name)}</strong></td>
+      <td><span class="badge b-red">${s.active}</span></td>
+      <td><span class="badge b-gray">${s.sub}</span></td>
+      <td style="color:var(--dim)">${esc(s.desc)}</td>
+    </tr>`).join('')||'<tr><td colspan="4" class="loading">No failed services at snapshot time</td></tr>';
+
+  }catch(e){}
+}
+
+function closeSnapDetail(){
+  document.getElementById('snap-detail-view').style.display='none';
+  document.getElementById('snap-list-view').style.display='';
+}
+
+async function deleteSnapshot(id){
+  if(!confirm('Delete this snapshot?'))return;
+  try{
+    await fetch(`/api/snapshot/${id}`,{method:'DELETE'});
+    loadSnapshots();
+  }catch(e){}
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────

@@ -1,0 +1,31 @@
+# Pi Security Monitor — 30-day log retention
+# Installed to /etc/logrotate.d/pi-security-monitor
+# This replaces /etc/logrotate.d/rsyslog for the files listed below.
+
+/var/log/syslog
+/var/log/auth.log
+/var/log/kern.log
+/var/log/daemon.log
+/var/log/user.log
+/var/log/lpr.log
+/var/log/cron.log
+/var/log/debug
+/var/log/messages
+/var/log/mail.info
+/var/log/mail.warn
+/var/log/mail.err
+/var/log/mail.log
+/var/log/ufw.log
+/var/log/fail2ban.log
+{
+    daily
+    rotate 30
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        /usr/lib/rsyslog/rsyslog-rotate
+    endscript
+}

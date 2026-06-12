@@ -3,11 +3,45 @@
 Pi Security Monitor — lightweight security monitoring for Raspberry Pi 3B+
 Run as root. Designed for <500MB RAM, ARM Cortex-A53, alongside Pi-hole.
 """
-from flask import Flask, render_template, jsonify, request
+import re
+import secrets
+from functools import wraps
+from flask import Flask, render_template, jsonify, request, session, redirect
 import psutil, subprocess, os, hashlib, threading, time, json
 from datetime import datetime
 
 app = Flask(__name__)
+
+# ── AUTH ──────────────────────────────────────────────────────────────────────
+_KEY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.secret_key')
+
+def _load_or_create_key():
+    try:
+        with open(_KEY_PATH) as f:
+            k = f.read().strip()
+            if k:
+                return k
+    except FileNotFoundError:
+        pass
+    k = secrets.token_hex(32)
+    try:
+        with open(_KEY_PATH, 'w') as f:
+            f.write(k)
+        os.chmod(_KEY_PATH, 0o600)
+    except Exception:
+        pass
+    return k
+
+app.secret_key = _load_or_create_key()
+MONITOR_PASSWORD = os.environ.get('MONITOR_PASSWORD', '')
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('authed'):
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated
 
 # ── CONFIG ──────────────────────────────────────────────────────────────────
 PORT = 5000
@@ -29,6 +63,12 @@ INTEGRITY_FILES = [
     '/etc/crontab', '/etc/rc.local',
     '/bin/bash', '/usr/bin/sudo', '/usr/bin/passwd',
     '/boot/cmdline.txt', '/boot/config.txt',
+]
+
+_SSH_RE = [
+    (re.compile(r'Accepted (\S+) for (\S+) from ([\d.:a-fA-F]+)'), 'login'),
+    (re.compile(r'Failed (\S+) for (?:invalid user )?(\S+) from ([\d.:a-fA-F]+)'), 'failed'),
+    (re.compile(r'Invalid user (\S+) from ([\d.:a-fA-F]+)'), 'invalid'),
 ]
 
 # ── TTL CACHE (thread-safe, no deps) ────────────────────────────────────────
@@ -69,7 +109,6 @@ def _sysinfo() -> dict:
     disk = psutil.disk_usage('/')
 
     temp = None
-    # vcgencmd (Pi-native)
     try:
         r = subprocess.run(['vcgencmd', 'measure_temp'],
                            capture_output=True, text=True, timeout=3)
@@ -318,17 +357,75 @@ def _integrity() -> list[dict]:
     return results
 
 
+def _ssh_events(n: int = 100) -> list[dict]:
+    lines = []
+    if os.path.exists('/var/log/auth.log'):
+        lines = _tail('/var/log/auth.log', 1000)
+    else:
+        try:
+            r = subprocess.run(
+                ['journalctl', '-u', 'ssh', '-u', 'sshd', '-n', '1000',
+                 '--no-pager', '--output=short'],
+                capture_output=True, text=True, timeout=10)
+            if r.returncode == 0:
+                lines = r.stdout.splitlines()
+        except Exception:
+            pass
+
+    events = []
+    for line in lines:
+        for pattern, etype in _SSH_RE:
+            m = pattern.search(line)
+            if m:
+                if etype in ('login', 'failed'):
+                    method, user, ip = m.group(1), m.group(2), m.group(3)
+                else:  # invalid
+                    method, user, ip = 'none', m.group(1), m.group(2)
+                events.append({
+                    'type':   etype,
+                    'user':   user,
+                    'ip':     ip,
+                    'method': method,
+                    'ts':     line[:15].strip(),
+                })
+                break
+
+    events.reverse()
+    return events[:n]
+
+
 # ── ROUTES ───────────────────────────────────────────────────────────────────
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = ''
+    if request.method == 'POST':
+        if not MONITOR_PASSWORD:
+            error = 'No password set. Add MONITOR_PASSWORD= to the systemd service or export it before running.'
+        elif request.form.get('password') == MONITOR_PASSWORD:
+            session['authed'] = True
+            return redirect('/')
+        else:
+            error = 'Incorrect password.'
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
 @app.route('/api/sysinfo')
+@login_required
 def api_sysinfo():
     return jsonify(cached('sysinfo', 3, _sysinfo))
 
 @app.route('/api/logs/<log_type>')
+@login_required
 def api_logs(log_type):
     if log_type not in LOG_FILES:
         return jsonify({'error': 'unknown'}), 400
@@ -338,34 +435,42 @@ def api_logs(log_type):
     return jsonify({'lines': lines, 'file': path, 'available': os.path.exists(path)})
 
 @app.route('/api/processes')
+@login_required
 def api_processes():
     return jsonify({'processes': cached('procs', 3, _processes)})
 
 @app.route('/api/network')
+@login_required
 def api_network():
     return jsonify(cached('net', 3, _network))
 
 @app.route('/api/services')
+@login_required
 def api_services():
     return jsonify({'services': cached('svcs', 8, _services)})
 
 @app.route('/api/cronjobs')
+@login_required
 def api_cronjobs():
     return jsonify({'crons': cached('crons', 30, _cronjobs)})
 
 @app.route('/api/autostart')
+@login_required
 def api_autostart():
     return jsonify({'autostart': cached('autostart', 30, _autostart)})
 
 @app.route('/api/packages')
+@login_required
 def api_packages():
     return jsonify({'packages': cached('pkgs', 60, _packages)})
 
 @app.route('/api/integrity')
+@login_required
 def api_integrity():
     return jsonify({'files': cached('integrity', 20, _integrity)})
 
 @app.route('/api/integrity/baseline', methods=['POST'])
+@login_required
 def api_set_baseline():
     global _baseline
     count = 0
@@ -377,11 +482,19 @@ def api_set_baseline():
     invalidate('integrity')
     return jsonify({'ok': True, 'baselined': count})
 
+@app.route('/api/ssh_events')
+@login_required
+def api_ssh_events():
+    n = min(int(request.args.get('n', 100)), 500)
+    return jsonify({'events': cached(f'ssh:{n}', 15, _ssh_events, n)})
+
 
 if __name__ == '__main__':
+    if not MONITOR_PASSWORD:
+        print('[!] WARNING: MONITOR_PASSWORD is not set — dashboard is inaccessible until you set it.')
+        print('[!]   export MONITOR_PASSWORD=your-secure-password')
     print(f'[*] Pi Security Monitor — http://0.0.0.0:{PORT}')
     print(f'[*] Monitoring {len(INTEGRITY_FILES)} integrity files')
-    # Auto-baseline readable files on startup
     for p in INTEGRITY_FILES:
         h = _hash(p)
         if h not in ('PERM_DENIED','NOT_FOUND') and not h.startswith('ERR'):

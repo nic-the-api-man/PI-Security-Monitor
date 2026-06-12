@@ -121,6 +121,7 @@ tr.row-warn td{background:#3d2a00 !important}
   <div class="header-right">
     <span id="hdr-load"></span>
     <span id="hdr-ts">--:--:--</span>
+    <a href="/logout" style="color:var(--dim);font-size:11px;margin-left:8px">logout</a>
   </div>
 </div>
 
@@ -173,6 +174,11 @@ tr.row-warn td{background:#3d2a00 !important}
       <div class="card-label">Uptime</div>
       <div class="card-value" id="d-uptime" style="font-size:16px">--</div>
     </div>
+    <div class="card">
+      <div class="card-label">SSH Alerts</div>
+      <div class="card-value" id="d-ssh-count">--</div>
+      <div class="card-sub" id="d-ssh-sub">failed attempts</div>
+    </div>
   </div>
 
   <div class="two-col">
@@ -185,6 +191,14 @@ tr.row-warn td{background:#3d2a00 !important}
       <div class="log-box" id="d-syslog" style="height:230px"><div class="loading">loading…</div></div>
     </div>
   </div>
+
+  <div class="section-title">SSH Login Events</div>
+  <div class="table-wrap"><div class="table-scroll" style="max-height:260px">
+    <table>
+      <thead><tr><th>Time</th><th>Type</th><th>User</th><th>IP</th><th>Method</th></tr></thead>
+      <tbody id="ssh-body"><tr><td colspan="5" class="loading">loading…</td></tr></tbody>
+    </table>
+  </div></div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
@@ -547,6 +561,7 @@ function showTab(name){
 // ── DASHBOARD ────────────────────────────────────────────────────────────────
 async function loadDashboard(){
   loadSysinfo();
+  loadSshEvents();
   try{
     const d=await fetch('/api/logs/auth?n=35').then(r=>r.json());
     renderLog(d.lines,'d-auth');
@@ -554,6 +569,34 @@ async function loadDashboard(){
   try{
     const d=await fetch('/api/logs/syslog?n=35').then(r=>r.json());
     renderLog(d.lines,'d-syslog');
+  }catch(e){}
+}
+
+// ── SSH EVENTS ────────────────────────────────────────────────────────────────
+async function loadSshEvents(){
+  try{
+    const d=await fetch('/api/ssh_events?n=100').then(r=>r.json());
+    const failed=d.events.filter(e=>e.type!=='login');
+    const logins=d.events.filter(e=>e.type==='login');
+
+    const countEl=document.getElementById('d-ssh-count');
+    if(countEl){
+      countEl.textContent=failed.length;
+      countEl.className='card-value '+(failed.length>10?'danger':failed.length>0?'warn':'ok');
+    }
+    const subEl=document.getElementById('d-ssh-sub');
+    if(subEl)subEl.textContent=`${logins.length} successful`;
+
+    const tbody=document.getElementById('ssh-body');
+    if(tbody){
+      tbody.innerHTML=d.events.slice(0,30).map(e=>`<tr>
+        <td style="color:var(--dim);font-size:11px;white-space:nowrap">${esc(e.ts)}</td>
+        <td><span class="badge ${e.type==='login'?'b-green':e.type==='failed'?'b-red':'b-yellow'}">${esc(e.type)}</span></td>
+        <td class="mono">${esc(e.user)}</td>
+        <td class="mono">${esc(e.ip)}</td>
+        <td style="color:var(--dim)">${esc(e.method)}</td>
+      </tr>`).join('')||'<tr><td colspan="5" class="loading">No SSH events found</td></tr>';
+    }
   }catch(e){}
 }
 

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pi Security Monitor — Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:'Courier New',monospace;font-size:13px;
+  min-height:100vh;display:flex;align-items:center;justify-content:center}
+.box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:32px 36px;width:100%;max-width:340px}
+h1{color:#3fb950;font-size:13px;letter-spacing:.5px;margin-bottom:24px;text-align:center}
+label{display:block;color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+input[type=password]{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;
+  padding:8px 12px;border-radius:4px;font-family:monospace;font-size:13px;margin-bottom:16px}
+input[type=password]:focus{outline:none;border-color:#58a6ff}
+button{width:100%;background:#0d2040;border:1px solid #58a6ff;color:#58a6ff;
+  padding:8px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:13px}
+button:hover{background:#1a3050}
+.err{background:#3d1010;border:1px solid #f85149;color:#f85149;
+  border-radius:4px;padding:8px 12px;margin-bottom:16px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>&#9724; Pi Security Monitor</h1>
+  {% if error %}
+  <div class="err">{{ error }}</div>
+  {% endif %}
+  <form method="post">
+    <label>Password</label>
+    <input type="password" name="password" autofocus autocomplete="current-password">
+    <button type="submit">Sign in</button>
+  </form>
+</div>
+</body>
+</html>

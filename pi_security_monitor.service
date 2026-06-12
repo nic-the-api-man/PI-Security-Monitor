@@ -8,6 +8,7 @@ Wants=network-online.target
 Type=simple
 User=root
 WorkingDirectory=/opt/pi-security-monitor
+EnvironmentFile=-/opt/pi-security-monitor/.env
 ExecStart=/opt/pi-security-monitor/venv/bin/python app.py
 Restart=on-failure
 RestartSec=5
